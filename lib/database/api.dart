@@ -10,11 +10,11 @@ import 'package:estimator/model/rate_model.dart';
 
 import 'table_schema.dart';
 
-class Api {
+class EstimatorApi {
   final Directory databaseDirectory;
   final StreamController<TableEvent> _tableEventController;
 
-  Api(this.databaseDirectory) : _tableEventController = StreamController<TableEvent>.broadcast();
+  EstimatorApi(this.databaseDirectory) : _tableEventController = StreamController<TableEvent>.broadcast();
 
   Database? _db;
   Database get db {
@@ -117,8 +117,6 @@ class Api {
 
   //   await batch.commit(noResult: true, continueOnError: true);
   // }
-
-
 
   // helper function to get a table out of initialized tables
   T? getTable<T extends TableSchema>() => _tables.firstWhereOrNull((table) => table is T) as T?;

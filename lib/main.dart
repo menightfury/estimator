@@ -30,19 +30,12 @@ class EstimatorApp extends StatelessWidget {
   Widget build(BuildContext context) {
     final api = Bootstrap.instance.api;
     // initialize all repositories here
-    AuthRepository.initialize();
-    BackupRepository.initialize(api);
-    final accountRepository = AccountRepository.initialize(api);
-    AmcRepository.initialize(api);
-    TransactionRepository.initialize(api);
-    final statRepository = StatRepository.initialize(api);
+    // final accountRepository = AccountRepository.initialize(api);
+    // AmcRepository.initialize(api);
+    // TransactionRepository.initialize(api);
 
     return MultiBlocProvider(
-      providers: [
-        BlocProvider<AccountsCubit>(create: (_) => AccountsCubit(repository: accountRepository)..fetchAccounts()),
-        BlocProvider<AppCubit>(create: (_) => AppCubit()),
-        BlocProvider(create: (_) => StatCubit(repository: statRepository)..fetchAllStats()),
-      ],
+      providers: [BlocProvider<AppCubit>(create: (_) => AppCubit())],
       child: const _AppView(),
     );
   }
@@ -67,7 +60,7 @@ class _AppView extends StatelessWidget {
 }
 
 class Bootstrap {
-  final Api api;
+  final EstimatorApi api;
 
   // preventing from calling the class
   const Bootstrap._(this.api);
@@ -96,7 +89,7 @@ class Bootstrap {
     );
 
     // Initialize local storage i.e. sqlite
-    final api = Api(directory);
+    final api = EstimatorApi(directory);
     return _instance = Bootstrap._(api);
   }
 }
