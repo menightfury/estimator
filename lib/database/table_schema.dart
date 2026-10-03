@@ -1,4 +1,4 @@
-import 'package:invesly/common_libs.dart';
+import 'package:estimator/common_libs.dart';
 
 // ~ Table schema
 abstract class TableDataModel extends Equatable {

@@ -3,9 +3,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:invesly/common/extensions/color_extension.dart';
+import 'package:estimator/common/extensions/color_extension.dart';
 
-import 'package:invesly/constants.dart';
+import 'package:estimator/constants.dart';
 
 @immutable
 class AppStyle {

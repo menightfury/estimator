@@ -1,20 +1,12 @@
 import 'package:flutter/foundation.dart';
 import 'package:path_provider/path_provider.dart';
 
-import 'accounts/cubit/accounts_cubit.dart';
-import 'accounts/model/account_repository.dart';
-import 'amcs/model/amc_repository.dart';
-import 'authentication/auth_repository.dart';
 import 'bloc_observer.dart';
-import 'common/cubit/app_cubit.dart';
+import 'cubit/app/app_cubit.dart';
 import 'common/presentations/styles/theme.dart';
 import 'common_libs.dart';
-import 'database/backup/backup_repository.dart';
-import 'database/invesly_api.dart';
-import 'intro/splash_page.dart';
-import 'stat/cubit/stat_cubit.dart';
-import 'stat/model/stat_repository.dart';
-import 'transactions/model/transaction_repository.dart';
+import 'database/api.dart';
+import 'presentation/intro/splash_page.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -25,15 +17,14 @@ void main() async {
   //     systemNavigationBarDividerColor: Colors.transparent,
   //   ),
   // );
-  await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
   Bloc.observer = EstimatorBlocObserver();
   await Bootstrap.initialize();
 
-  runApp(const InveslyApp());
+  runApp(const EstimatorApp());
 }
 
-class InveslyApp extends StatelessWidget {
-  const InveslyApp({super.key});
+class EstimatorApp extends StatelessWidget {
+  const EstimatorApp({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -62,30 +53,21 @@ class _AppView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<AppCubit, AppState>(
-      buildWhen: (previous, current) {
-        return previous.isDarkMode != current.isDarkMode ||
-            previous.isDynamicColor != current.isDynamicColor ||
-            previous.accentColor != current.accentColor;
-      },
-      builder: (context, state) {
-        $logger.e('Material app rebuilds 😟.');
+    $logger.e('Material app rebuilds 😟.');
 
-        return MaterialApp(
-          title: 'Invesly',
-          debugShowCheckedModeBanner: false,
-          theme: AppStyle.instance.getTheme(lightScheme),
-          darkTheme: AppStyle.instance.getTheme(darkScheme),
-          themeMode: state.isDarkMode ? ThemeMode.dark : ThemeMode.light,
-          home: const SplashPage(),
-        );
-      },
+    return MaterialApp(
+      title: 'Estimator',
+      debugShowCheckedModeBanner: false,
+      theme: AppStyle.instance.getTheme(ColorScheme.light()),
+      // darkTheme: AppStyle.instance.getTheme(darkScheme),
+      // themeMode: state.isDarkMode ? ThemeMode.dark : ThemeMode.light,
+      home: const SplashPage(),
     );
   }
 }
 
 class Bootstrap {
-  final InveslyApi api;
+  final Api api;
 
   // preventing from calling the class
   const Bootstrap._(this.api);
@@ -114,7 +96,7 @@ class Bootstrap {
     );
 
     // Initialize local storage i.e. sqlite
-    final api = InveslyApi(directory);
+    final api = Api(directory);
     return _instance = Bootstrap._(api);
   }
 }

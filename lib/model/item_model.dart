@@ -1,130 +1,123 @@
-import 'package:invesly/common/extensions/color_extension.dart';
-import 'package:invesly/common_libs.dart';
-import 'package:invesly/database/table_schema.dart';
+import 'package:estimator/common_libs.dart';
+import 'package:estimator/database/table_schema.dart';
 
-enum InveslyAccountIcon {
-  wallet(Icons.account_balance_wallet_rounded),
-  savings(Icons.savings_rounded),
-  card(Icons.credit_card_rounded),
-  home(Icons.home_rounded),
-  business(Icons.business_center_rounded),
-  chart(Icons.show_chart_rounded),
-  currency(Icons.currency_exchange_rounded),
-  receipt(Icons.receipt_long_rounded);
+// enum InveslyAccountIcon {
+//   wallet(Icons.account_balance_wallet_rounded),
+//   savings(Icons.savings_rounded),
+//   card(Icons.credit_card_rounded),
+//   home(Icons.home_rounded),
+//   business(Icons.business_center_rounded),
+//   chart(Icons.show_chart_rounded),
+//   currency(Icons.currency_exchange_rounded),
+//   receipt(Icons.receipt_long_rounded);
 
-  const InveslyAccountIcon(this.data);
+//   const InveslyAccountIcon(this.data);
 
-  final IconData data;
+//   final IconData data;
 
-  static InveslyAccountIcon? fromName(String value) {
-    if (value.trim().isEmpty) {
-      return null;
-    }
+//   static InveslyAccountIcon? fromName(String value) {
+//     if (value.trim().isEmpty) {
+//       return null;
+//     }
 
-    return values.firstWhereOrNull((icon) => icon.name == value);
-  }
+//     return values.firstWhereOrNull((icon) => icon.name == value);
+//   }
 
-  Widget buildWidget(
-    BuildContext context, {
-    Color? color,
-    Color? backgroundColor,
-    BoxBorder? border,
-    double? iconSize,
-    double? radius,
-    double? padding = 8.0,
-  }) {
-    return Icon(data, color: color, size: iconSize).inContainer(
-      context,
-      color: backgroundColor ?? color?.lighten(80),
-      border: border,
-      radius: radius,
-      padding: padding,
-    );
-  }
-}
+//   Widget buildWidget(
+//     BuildContext context, {
+//     Color? color,
+//     Color? backgroundColor,
+//     BoxBorder? border,
+//     double? iconSize,
+//     double? radius,
+//     double? padding = 8.0,
+//   }) {
+//     return Icon(data, color: color, size: iconSize).inContainer(
+//       context,
+//       color: backgroundColor ?? color?.lighten(80),
+//       border: border,
+//       radius: radius,
+//       padding: padding,
+//     );
+//   }
+// }
 
-class InveslyAccount extends AccountInDb {
-  InveslyAccount({
-    required super.id,
-    required super.name,
-    super.description,
-    this.icon = _defaultIcon,
-    this.color = _defaultColor,
-  }) : super(iconName: icon.name, colorValue: color.toARGB32());
+class ItemInDb extends TableDataModel {
+  const ItemInDb({
+    required this.id,
+    required this.name,
+    required this.description,
+    required this.unit,
+    this.colorValue,
+  });
 
-  InveslyAccount.empty({
-    int? id,
-    super.name = 'Default',
-    super.description,
-    this.icon = _defaultIcon,
-    this.color = _defaultColor,
-  }) : super(id: id ?? 0, iconName: icon.name, colorValue: color.toARGB32());
-
-  final InveslyAccountIcon icon;
-  final Color color;
-
-  static const InveslyAccountIcon _defaultIcon = InveslyAccountIcon.wallet;
-  static const Color _defaultColor = InveslyColors.green;
-
-  factory InveslyAccount.fromDb(AccountInDb account) {
-    final icon = account.iconName != null ? InveslyAccountIcon.fromName(account.iconName!) : null;
-
-    return InveslyAccount(
-      id: account.id,
-      name: account.name,
-      description: account.description,
-      icon: icon ?? _defaultIcon,
-      color: account.colorValue != null ? Color(account.colorValue!) : _defaultColor,
-    );
-  }
-}
-
-class AccountInDb extends TableDataModel {
-  const AccountInDb({required this.id, required this.name, this.description, this.iconName, this.colorValue});
-
-  final int id;
+  final String id;
   final String name;
-  final String? description;
-  final String? iconName;
+  final String description;
+  final String unit;
   final int? colorValue;
 
   @override
-  List<Object?> get props => [id, name, description, iconName, colorValue];
+  List<Object?> get props => [id, name, description, unit, colorValue];
 }
 
-class AccountTable extends TableSchema<AccountInDb> {
-  // Singleton pattern to ensure only one instance exists
-  const AccountTable._() : super('accounts');
-  static const instance = AccountTable._();
-  factory AccountTable() => instance;
+class EstimatorItem extends ItemInDb {
+  EstimatorItem({
+    required super.id,
+    required super.name,
+    required super.description,
+    required super.unit,
+    this.color = _defaultColor,
+  }) : super(colorValue: color.toARGB32());
 
-  TableColumn<int> get idColumn => TableColumn<int>('id', title, isPrimary: true, isAutoIncrement: true);
+  final Color color;
+
+  static const Color _defaultColor = EstimatorColors.green;
+
+  factory EstimatorItem.fromDb(ItemInDb item) {
+    return EstimatorItem(
+      id: item.id,
+      name: item.name,
+      description: item.description,
+      unit: item.unit,
+      color: item.colorValue != null ? Color(item.colorValue!) : _defaultColor,
+    );
+  }
+}
+
+class ItemTable extends TableSchema<ItemInDb> {
+  // Singleton pattern to ensure only one instance exists
+  const ItemTable._() : super('items');
+  static const instance = ItemTable._();
+  factory ItemTable() => instance;
+
+  TableColumn<String> get idColumn => TableColumn<String>('id', title, isPrimary: true);
   TableColumn<String> get nameColumn => TableColumn<String>('name', title, isUnique: true);
-  TableColumn<String> get descriptionColumn => TableColumn<String>('description', title, isNullable: true);
-  TableColumn<String> get iconColumn => TableColumn<String>('icon', title, isNullable: true);
+  TableColumn<String> get descriptionColumn => TableColumn<String>('description', title);
+  TableColumn<String> get unitColumn => TableColumn<String>('unit', title);
   TableColumn<int> get colorColumn => TableColumn<int>('color', title, isNullable: true);
 
   @override
-  Set<TableColumn> get columns => {idColumn, nameColumn, descriptionColumn, iconColumn, colorColumn};
+  Set<TableColumn> get columns => {idColumn, nameColumn, descriptionColumn, unitColumn, colorColumn};
 
   @override
-  Map<String, dynamic> fromModel(AccountInDb data) {
+  Map<String, dynamic> fromModel(ItemInDb item) {
     return <String, dynamic>{
-      idColumn.title: data.id,
-      nameColumn.title: data.name,
-      descriptionColumn.title: data.description,
-      iconColumn.title: data.iconName,
-      colorColumn.title: data.colorValue,
+      idColumn.title: item.id,
+      nameColumn.title: item.name,
+      descriptionColumn.title: item.description,
+      unitColumn.title: item.unit,
+      colorColumn.title: item.colorValue,
     };
   }
 
   @override
-  AccountInDb fromMap(Map<String, dynamic> map) {
-    return AccountInDb(
-      id: map[idColumn.title] as int,
+  ItemInDb fromMap(Map<String, dynamic> map) {
+    return ItemInDb(
+      id: map[idColumn.title] as String,
       name: map[nameColumn.title] as String,
-      description: map[descriptionColumn.title] as String?,
-      iconName: map[iconColumn.title] as String?,
+      description: map[descriptionColumn.title] as String,
+      unit: map[unitColumn.title] as String,
       colorValue: map[colorColumn.title] as int?,
     );
   }
