@@ -37,7 +37,6 @@ export 'package:flutter_bloc/flutter_bloc.dart';
 export 'package:hive/hive.dart';
 export 'package:hive_flutter/hive_flutter.dart';
 export 'package:hydrated_bloc/hydrated_bloc.dart';
-export 'package:permission_handler/permission_handler.dart';
 export 'package:sqflite/sqflite.dart';
 export 'package:sqflite_common_ffi/sqflite_common_ffi.dart';
 export 'package:gap/gap.dart';

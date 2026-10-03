@@ -18,7 +18,7 @@ void main() async {
   //   ),
   // );
   Bloc.observer = EstimatorBlocObserver();
-  await Bootstrap.initialize();
+  // await Bootstrap.initialize();
 
   runApp(const EstimatorApp());
 }
@@ -28,7 +28,7 @@ class EstimatorApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final api = Bootstrap.instance.api;
+    // final api = Bootstrap.instance.api;
     // initialize all repositories here
     // final accountRepository = AccountRepository.initialize(api);
     // AmcRepository.initialize(api);

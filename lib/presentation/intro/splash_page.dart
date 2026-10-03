@@ -22,7 +22,10 @@ class _SplashPageState extends State<SplashPage> {
     // show splash screen for at least 2 seconds
     _timer = Timer(2.seconds, () => _completer.complete());
 
-    Future.wait<void>([_completer.future, Bootstrap.instance.api.initializeDatabase()]).then((_) async {
+    Future.wait<void>([
+      _completer.future,
+      //  Bootstrap.instance.api.initializeDatabase()
+    ]).then((_) async {
       if (!mounted) return;
 
       context.go(const DashboardPage());
