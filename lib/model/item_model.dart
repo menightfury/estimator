@@ -42,37 +42,79 @@ import 'package:estimator/database/table_schema.dart';
 //   }
 // }
 
+enum EstimatorItemType {
+  material('Material'),
+  labor('Labour'),
+  both('Material + Labour');
+
+  const EstimatorItemType(this.title);
+
+  final String title;
+
+  IconData get icon {
+    return switch (this) {
+      material => Icons.north_east_rounded,
+      _ => Icons.south_west_rounded,
+    };
+  }
+
+  static EstimatorItemType? fromName(String value) {
+    final $value = value.trim();
+    if ($value.isEmpty) {
+      return null;
+    }
+
+    return values.firstWhereOrNull((type) => type.name == $value);
+  }
+
+  static EstimatorItemType? fromCode(String value) {
+    final $value = value.trim();
+    if ($value.isEmpty) return null;
+
+    final $string = $value.toLowerCase();
+    return switch ($string) {
+      'm' => material,
+      'l' => labor,
+      'ml' => both,
+      _ => null,
+    };
+  }
+
+  Color color(BuildContext context) {
+    return switch (this) {
+      material => Colors.pink,
+      labor => Colors.teal,
+      both => Colors.blueAccent,
+    };
+  }
+}
+
 class ItemInDb extends TableDataModel {
   const ItemInDb({
     required this.id,
     required this.name,
     required this.description,
     required this.unit,
-    this.colorValue,
+    this.typeString,
   });
 
   final String id;
   final String name;
   final String description;
   final String unit;
-  final int? colorValue;
+  final String? typeString;
 
   @override
-  List<Object?> get props => [id, name, description, unit, colorValue];
+  List<Object?> get props => [id, name, description, unit, typeString];
 }
 
 class EstimatorItem extends ItemInDb {
-  EstimatorItem({
-    required super.id,
-    required super.name,
-    required super.description,
-    required super.unit,
-    this.color = _defaultColor,
-  }) : super(colorValue: color.toARGB32());
+  EstimatorItem({required super.id, required super.name, required super.description, required super.unit, this.type})
+    : super(typeString: type?.name);
 
-  final Color color;
+  final EstimatorItemType? type;
 
-  static const Color _defaultColor = EstimatorColors.green;
+  // static const Color _defaultColor = EstimatorColors.green;
 
   factory EstimatorItem.fromDb(ItemInDb item) {
     return EstimatorItem(
@@ -80,7 +122,7 @@ class EstimatorItem extends ItemInDb {
       name: item.name,
       description: item.description,
       unit: item.unit,
-      color: item.colorValue != null ? Color(item.colorValue!) : _defaultColor,
+      type: item.typeString != null ? EstimatorItemType.fromCode(item.typeString!) : null,
     );
   }
 }
@@ -95,10 +137,10 @@ class ItemTable extends TableSchema<ItemInDb> {
   TableColumn<String> get nameColumn => TableColumn<String>('name', title, isUnique: true);
   TableColumn<String> get descriptionColumn => TableColumn<String>('description', title);
   TableColumn<String> get unitColumn => TableColumn<String>('unit', title);
-  TableColumn<int> get colorColumn => TableColumn<int>('color', title, isNullable: true);
+  TableColumn<int> get typeColumn => TableColumn<int>('type', title, isNullable: true);
 
   @override
-  Set<TableColumn> get columns => {idColumn, nameColumn, descriptionColumn, unitColumn, colorColumn};
+  Set<TableColumn> get columns => {idColumn, nameColumn, descriptionColumn, unitColumn, typeColumn};
 
   @override
   Map<String, dynamic> fromModel(ItemInDb item) {
@@ -107,7 +149,7 @@ class ItemTable extends TableSchema<ItemInDb> {
       nameColumn.title: item.name,
       descriptionColumn.title: item.description,
       unitColumn.title: item.unit,
-      colorColumn.title: item.colorValue,
+      typeColumn.title: item.typeString,
     };
   }
 
@@ -118,7 +160,7 @@ class ItemTable extends TableSchema<ItemInDb> {
       name: map[nameColumn.title] as String,
       description: map[descriptionColumn.title] as String,
       unit: map[unitColumn.title] as String,
-      colorValue: map[colorColumn.title] as int?,
+      typeString: map[typeColumn.title] as String?,
     );
   }
 }

@@ -37,6 +37,7 @@ class EstimatorApi {
   final _rateTable = RateTable();
 
   // Table getters
+  ItemTable get itemTable => _itemTable;
   ItemTable get accountTable => _itemTable;
   LoaTable get amcTable => _loaTable;
   RateTable get trnTable => _rateTable;

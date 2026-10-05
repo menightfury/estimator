@@ -6,6 +6,7 @@ import 'cubit/app/app_cubit.dart';
 import 'common/presentations/styles/theme.dart';
 import 'common_libs.dart';
 import 'database/api.dart';
+import 'database/repository.dart';
 import 'presentation/intro/splash_page.dart';
 
 void main() async {
@@ -92,6 +93,7 @@ class Bootstrap {
 
     // Initialize local storage i.e. sqlite
     final api = EstimatorApi(directory);
+    EstimatorRepository.initialize(api);
     return _instance = Bootstrap._(api);
   }
 }
