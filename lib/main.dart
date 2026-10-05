@@ -18,7 +18,7 @@ void main() async {
   //   ),
   // );
   Bloc.observer = EstimatorBlocObserver();
-  // await Bootstrap.initialize();
+  await Bootstrap.initialize();
 
   runApp(const EstimatorApp());
 }
@@ -80,7 +80,9 @@ class Bootstrap {
     };
 
     // declare directory where both the databases will be stored
-    final directory = await getExternalStorageDirectory() ?? await getApplicationDocumentsDirectory();
+    // final directory = await getApplicationDocumentsDirectory();
+    final directory = await getApplicationSupportDirectory();
+    $logger.i(directory);
     // Initialize hydrated storage (i.e. hive database) in that declared directory.
     // However, no need to specify hive db name separately, because `HydratedStorage` already
     // specified the name as `hydrated_box`

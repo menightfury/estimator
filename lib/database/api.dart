@@ -43,45 +43,47 @@ class EstimatorApi {
 
   Future<void> initializeDatabase() async {
     final tables = <TableSchema>[_itemTable, _loaTable, _rateTable];
-    _db = await openDatabase(
+    _db = await databaseFactoryFfi.openDatabase(
       dbPath,
-      version: 1,
-      onCreate: (db, version) async {
-        final batch = db.batch();
+      options: OpenDatabaseOptions(
+        version: 1,
+        onCreate: (db, version) async {
+          final batch = db.batch();
 
-        // initialize all necessary tables in database
-        for (final table in tables) {
-          batch.execute(table.createTableSql);
-        }
+          // initialize all necessary tables in database
+          for (final table in tables) {
+            batch.execute(table.createTableSql);
+          }
 
-        // create triggers for automatic stats updates (dynamically generated)
-        // batch.execute(
-        //   _rateTable.createTrigger(
-        //     eventType: TableEventType.insert,
-        //     operation: _buildTriggerOperation(TableEventType.insert),
-        //   ),
-        // );
-        // batch.execute(
-        //   _rateTable.createTrigger(
-        //     eventType: TableEventType.update,
-        //     operation: _buildTriggerOperation(TableEventType.update),
-        //   ),
-        // );
-        // batch.execute(
-        //   _rateTable.createTrigger(
-        //     eventType: TableEventType.delete,
-        //     operation: _buildTriggerOperation(TableEventType.delete),
-        //   ),
-        // );
+          // create triggers for automatic stats updates (dynamically generated)
+          // batch.execute(
+          //   _rateTable.createTrigger(
+          //     eventType: TableEventType.insert,
+          //     operation: _buildTriggerOperation(TableEventType.insert),
+          //   ),
+          // );
+          // batch.execute(
+          //   _rateTable.createTrigger(
+          //     eventType: TableEventType.update,
+          //     operation: _buildTriggerOperation(TableEventType.update),
+          //   ),
+          // );
+          // batch.execute(
+          //   _rateTable.createTrigger(
+          //     eventType: TableEventType.delete,
+          //     operation: _buildTriggerOperation(TableEventType.delete),
+          //   ),
+          // );
 
-        await batch.commit(noResult: true, continueOnError: true);
-      },
-      // onUpgrade: (db, oldVersion, newVersion) async {
-      //   $logger.w('===== upgrading database ======');
-      //   if (oldVersion < 7) {
-      //     await _migrateAccountsToNewModel(db);
-      //   }
-      // },
+          await batch.commit(noResult: true, continueOnError: true);
+        },
+        // onUpgrade: (db, oldVersion, newVersion) async {
+        //   $logger.w('===== upgrading database ======');
+        //   if (oldVersion < 7) {
+        //     await _migrateAccountsToNewModel(db);
+        //   }
+        // },
+      ),
     );
     // if (_db != null) {
     //   final version = await _db!.rawQuery('PRAGMA user_version');
