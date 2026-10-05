@@ -25,7 +25,7 @@ class _SplashPageState extends State<SplashPage> {
     Future.wait<void>([_completer.future, Bootstrap.instance.api.initializeDatabase()]).then((_) async {
       if (!mounted) return;
 
-      context.go(const DashboardPage());
+      context.go(const CreateEstimatePage());
     });
   }
 
