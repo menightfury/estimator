@@ -1,57 +1,22 @@
-part of '../create_estimate.dart';
+import 'package:estimator/common/utils/debouncer.dart';
+import 'package:estimator/common_libs.dart';
+import 'package:estimator/database/repository.dart';
+import 'package:estimator/model/loa_model.dart';
 
-class _ItemSearch extends StatefulWidget {
-  const _ItemSearch({super.key});
+class LoaPicker extends StatefulWidget {
+  const LoaPicker({super.key});
 
   @override
-  State<_ItemSearch> createState() => __ItemSearchState();
+  State<LoaPicker> createState() => _LoaPickerState();
 }
 
-class __ItemSearchState extends State<_ItemSearch> {
-  // List<ItemInDb> _items = const [];
-  // String _query = '';
-  // String? _searchError;
-  // bool _isSearching = false;
-  // int _searchRequest = 0;
-
-  // Future<void> _searchItems(String query) async {
-  //   final request = ++_searchRequest;
-  //   _query = query.trim();
-  //   if (_query.isEmpty) {
-  //     setState(() {
-  //       _items = const [];
-  //       _searchError = null;
-  //       _isSearching = false;
-  //     });
-  //     return;
-  //   }
-
-  //   setState(() {
-  //     _searchError = null;
-  //     _isSearching = true;
-  //   });
-
-  //   try {
-  //     final items = await EstimatorRepository.instance.searchItems(query);
-  //     if (!mounted || request != _searchRequest) return;
-  //     setState(() {
-  //       _items = items;
-  //       _isSearching = false;
-  //     });
-  //   } on Exception catch (error) {
-  //     if (!mounted || request != _searchRequest) return;
-  //     setState(() {
-  //       _searchError = 'Search failed: $error';
-  //       _isSearching = false;
-  //     });
-  //   }
-  // }
-
+class _LoaPickerState extends State<LoaPicker> {
   @override
   Widget build(BuildContext context) {
     final searchNotifier = ItemSearchNotifier();
 
     return Column(
+      mainAxisSize: MainAxisSize.min,
       children: <Widget>[
         TextField(
           decoration: const InputDecoration(hintText: 'Type to search'),
@@ -79,10 +44,10 @@ class __ItemSearchState extends State<_ItemSearch> {
                 final results = searchNotifier.results;
                 return ListView.separated(
                   itemBuilder: ((context, index) {
-                    final item = results[index];
+                    final loa = results[index];
                     return ListTile(
-                      title: Text(item.name),
-                      subtitle: Text(item.description, maxLines: 2, overflow: TextOverflow.ellipsis),
+                      title: Text('${loa.number} dated ${loa.date.toReadable()}'),
+                      subtitle: Text(loa.rebate?.toString() ?? '0.0%', maxLines: 2, overflow: TextOverflow.ellipsis),
                     );
                   }),
                   separatorBuilder: (_, _) => const SizedBox(height: 8.0),
@@ -108,14 +73,14 @@ class ItemSearchNotifier extends ChangeNotifier {
       _status = ItemSearchStateStatus.initial,
       _results = const [];
 
-  final Map<String, List<ItemInDb>> _amcCache;
+  final Map<String, List<EstimatorLoa>> _amcCache;
   final Debouncer _debouncer;
 
   ItemSearchStateStatus _status;
   ItemSearchStateStatus get status => _status;
 
-  List<ItemInDb> _results;
-  List<ItemInDb> get results => _results;
+  List<EstimatorLoa> _results;
+  List<EstimatorLoa> get results => _results;
 
   Future<void> search(String query) async {
     final q = query.trim();
@@ -141,7 +106,7 @@ class ItemSearchNotifier extends ChangeNotifier {
 
     try {
       await _debouncer.wait();
-      final results = await EstimatorRepository.instance.searchItems(query);
+      final results = await EstimatorRepository.instance.searchLoas(query);
       $logger.d(results);
       _status = ItemSearchStateStatus.success;
       _results = results;

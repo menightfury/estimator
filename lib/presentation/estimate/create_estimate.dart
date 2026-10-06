@@ -6,17 +6,17 @@ import 'package:estimator/model/item_model.dart';
 part 'widgets/item_picker.dart';
 
 class CreateEstimatePage extends StatelessWidget {
-  const new({super.key});
+  const CreateEstimatePage({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(title: Text('Create Estimate Page')),
       body: Padding(
         padding: const EdgeInsets.all(8.0),
         child: Column(
           spacing: 16.0,
           children: <Widget>[
-            Text('Header Display Bar'),
             Expanded(
               child: Row(
                 spacing: 16.0,

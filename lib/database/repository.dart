@@ -1,7 +1,7 @@
 import 'dart:async';
 
-import 'package:csv/csv.dart';
 import 'package:estimator/model/item_model.dart';
+import 'package:estimator/model/loa_model.dart';
 
 import 'api.dart';
 import 'table_schema.dart';
@@ -22,22 +22,32 @@ class EstimatorRepository {
 
   final EstimatorApi _api;
 
-  Future<List<ItemInDb>> searchItems(String query) async {
+  Future<List<EstimatorItem>> searchItems(String query) async {
     final searchTerm = query.trim();
     if (searchTerm.isEmpty) return const [];
 
     final table = _api.itemTable;
     final results = await _api.select(
       table,
-      filter: SingleValueTableFilter<String>(
-        table.nameColumn,
-        searchTerm,
-        operator: FilterOperator.like,
-      ),
+      filter: SingleValueTableFilter<String>(table.nameColumn, searchTerm, operator: FilterOperator.like),
       orderBy: {table.nameColumn: false},
     );
 
-    return results.map(table.fromMap).toList();
+    return results.map((map) => EstimatorItem.fromDb(table.fromMap(map))).toList();
+  }
+
+  Future<List<EstimatorLoa>> searchLoas(String query) async {
+    final searchTerm = query.trim();
+    if (searchTerm.isEmpty) return const [];
+
+    final table = _api.loaTable;
+    final results = await _api.select(
+      table,
+      filter: SingleValueTableFilter<String>(table.numberColumn, searchTerm, operator: FilterOperator.like),
+      orderBy: {table.numberColumn: false},
+    );
+
+    return results.map((map) => EstimatorLoa.fromDb(table.fromMap(map))).toList();
   }
 
   // AccountTable get _accountTable => _api.accountTable;

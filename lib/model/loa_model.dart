@@ -1,22 +1,30 @@
 import 'package:estimator/database/table_schema.dart';
 
 class LoaInDb extends TableDataModel {
-  const LoaInDb({required this.id, required this.number, required this.date, this.rebate});
+  const LoaInDb({required this.id, required this.number, required this.dateInt, this.rebate});
 
   final String id;
   final String number;
-  final int date;
+  final int dateInt;
   final double? rebate;
 
   @override
-  List<Object?> get props => [id, number, date, rebate];
+  List<Object?> get props => [id, number, dateInt, rebate];
 }
 
 class EstimatorLoa extends LoaInDb {
-  const EstimatorLoa({required super.id, required super.number, required super.date, super.rebate});
+  EstimatorLoa({required super.id, required super.number, required this.date, super.rebate})
+    : super(dateInt: (date.millisecondsSinceEpoch / 1_000).round());
+
+  final DateTime date;
 
   factory EstimatorLoa.fromDb(LoaInDb loa) {
-    return EstimatorLoa(id: loa.id, number: loa.number, date: loa.date, rebate: loa.rebate);
+    return EstimatorLoa(
+      id: loa.id,
+      number: loa.number,
+      date: DateTime.fromMillisecondsSinceEpoch(loa.dateInt * 1_000),
+      rebate: loa.rebate,
+    );
   }
 }
 
@@ -39,7 +47,7 @@ class LoaTable extends TableSchema<LoaInDb> {
     return <String, dynamic>{
       idColumn.title: loa.id,
       numberColumn.title: loa.number,
-      dateColumn.title: loa.date,
+      dateColumn.title: loa.dateInt,
       rebateColumn.title: loa.rebate,
     };
   }
@@ -49,7 +57,7 @@ class LoaTable extends TableSchema<LoaInDb> {
     return LoaInDb(
       id: map[idColumn.title] as String,
       number: map[numberColumn.title] as String,
-      date: map[dateColumn.title] as int,
+      dateInt: map[dateColumn.title] as int,
       rebate: map[rebateColumn.title] as double?,
     );
   }
