@@ -1,0 +1,94 @@
+import 'package:flutter/material.dart';
+import 'package:estimator/common/extensions/buildcontext_extension.dart';
+import 'package:estimator/constants.dart';
+
+class Tappable extends StatelessWidget {
+  const Tappable({
+    super.key,
+    required this.child,
+    this.childAlignment = Alignment.center,
+    this.leading,
+    this.trailing,
+    this.color,
+    this.disabledColor,
+    this.borderRadius = iButtonBorderRadius,
+    this.border,
+    this.shape,
+    this.margin,
+    this.padding,
+    // this.size,
+    this.height,
+    this.width,
+    this.spacing = 8.0,
+    this.onTap,
+    this.onLongPress,
+    this.enabled = true,
+  });
+
+  final Color? color;
+  final Color? disabledColor;
+  final BorderRadius? borderRadius;
+  final BorderSide? border;
+  final ShapeBorder? shape;
+  // final Size? size;
+  final double? height;
+  final double? width;
+  final double spacing;
+  final EdgeInsetsGeometry? margin;
+  final EdgeInsetsGeometry? padding;
+
+  final VoidCallback? onTap;
+  final VoidCallback? onLongPress;
+
+  final Widget child;
+  final AlignmentGeometry childAlignment;
+  final Widget? leading;
+  final Widget? trailing;
+
+  final bool enabled;
+
+  @override
+  Widget build(BuildContext context) {
+    final defaultShape = RoundedRectangleBorder(
+      side: border ?? BorderSide.none,
+      borderRadius: borderRadius ?? BorderRadius.zero,
+    );
+
+    Widget content = Material(
+      color: enabled ? color ?? context.colors.primaryContainer : disabledColor ?? context.theme.disabledColor,
+      clipBehavior: Clip.hardEdge,
+      type: MaterialType.canvas,
+      shape: shape ?? defaultShape,
+      child: InkWell(
+        customBorder: shape ?? defaultShape,
+        onTap: enabled ? onTap : null,
+        onLongPress: onLongPress,
+        child: SizedBox(
+          width: width,
+          height: height,
+          child: Padding(
+            padding: padding ?? const EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              spacing: spacing,
+              children: <Widget>[
+                ?leading,
+                Flexible(
+                  child: Align(alignment: childAlignment, child: child),
+                ),
+                ?trailing,
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+
+    if (margin != null) {
+      return Padding(padding: margin!, child: content);
+    }
+
+    return content;
+  }
+}

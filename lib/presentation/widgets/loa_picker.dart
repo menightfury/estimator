@@ -13,7 +13,7 @@ class LoaPicker extends StatefulWidget {
 class _LoaPickerState extends State<LoaPicker> {
   @override
   Widget build(BuildContext context) {
-    final searchNotifier = ItemSearchNotifier();
+    final searchNotifier = LoaSearchNotifier();
 
     return Column(
       mainAxisSize: MainAxisSize.min,
@@ -27,16 +27,16 @@ class _LoaPickerState extends State<LoaPicker> {
             listenable: searchNotifier,
             builder: (context, _) {
               $logger.d(searchNotifier);
-              if (searchNotifier.status == ItemSearchStateStatus.error) {
+              if (searchNotifier.status == LoaSearchStateStatus.error) {
                 return Center(child: Text('Some error occurred! Try again later.', textAlign: TextAlign.center));
               }
 
-              if (searchNotifier.status == ItemSearchStateStatus.initial ||
-                  searchNotifier.status == ItemSearchStateStatus.empty) {
+              if (searchNotifier.status == LoaSearchStateStatus.initial ||
+                  searchNotifier.status == LoaSearchStateStatus.empty) {
                 return Center(child: Text('Type to search items'));
               }
 
-              if (searchNotifier.status == ItemSearchStateStatus.success) {
+              if (searchNotifier.status == LoaSearchStateStatus.success) {
                 if (searchNotifier.results.isEmpty) {
                   return Center(child: Text('No matching items'));
                 }
@@ -64,20 +64,20 @@ class _LoaPickerState extends State<LoaPicker> {
   }
 }
 
-enum ItemSearchStateStatus { initial, empty, loading, success, error }
+enum LoaSearchStateStatus { initial, empty, loading, success, error }
 
-class ItemSearchNotifier extends ChangeNotifier {
-  ItemSearchNotifier()
+class LoaSearchNotifier extends ChangeNotifier {
+  LoaSearchNotifier()
     : _amcCache = {},
       _debouncer = Debouncer(2.seconds),
-      _status = ItemSearchStateStatus.initial,
+      _status = LoaSearchStateStatus.initial,
       _results = const [];
 
   final Map<String, List<EstimatorLoa>> _amcCache;
   final Debouncer _debouncer;
 
-  ItemSearchStateStatus _status;
-  ItemSearchStateStatus get status => _status;
+  LoaSearchStateStatus _status;
+  LoaSearchStateStatus get status => _status;
 
   List<EstimatorLoa> _results;
   List<EstimatorLoa> get results => _results;
@@ -85,7 +85,7 @@ class ItemSearchNotifier extends ChangeNotifier {
   Future<void> search(String query) async {
     final q = query.trim();
     if (q.isEmpty) {
-      _status = ItemSearchStateStatus.empty;
+      _status = LoaSearchStateStatus.empty;
       _results = const [];
       notifyListeners();
       return;
@@ -94,13 +94,13 @@ class ItemSearchNotifier extends ChangeNotifier {
     final key = q.toLowerCase();
     final cachedResult = _amcCache[key];
     if (cachedResult != null) {
-      _status = ItemSearchStateStatus.success;
+      _status = LoaSearchStateStatus.success;
       _results = cachedResult;
       notifyListeners();
       return;
     }
 
-    _status = ItemSearchStateStatus.loading;
+    _status = LoaSearchStateStatus.loading;
     _results = const [];
     notifyListeners();
 
@@ -108,11 +108,11 @@ class ItemSearchNotifier extends ChangeNotifier {
       await _debouncer.wait();
       final results = await EstimatorRepository.instance.searchLoas(query);
       $logger.d(results);
-      _status = ItemSearchStateStatus.success;
+      _status = LoaSearchStateStatus.success;
       _results = results;
       _amcCache[key] = results;
     } on Exception catch (_) {
-      _status = ItemSearchStateStatus.error;
+      _status = LoaSearchStateStatus.error;
       _results = const [];
     }
     notifyListeners();
