@@ -47,8 +47,9 @@ class _EditRatePageContentState extends State<_EditRatePageContent> with SingleT
     $logger.i('Rebuilding edit Rate screen');
 
     // return BlocListener<EditRateCubit, EditRateState>(
-    //   listenWhen: (prev, curr) => (prev.status != curr.status && curr.isFailureOrSuccess),
+    //   listenWhen: (prev, curr) => prev.loaNumber != curr.loaNumber,
     //   listener: (context, state) async {
+    //     loaNumberController.text = state.loaNumber ?? '';
     //     late final SnackBar message;
     //     if (state.status == EditRateStatus.saved) {
     //       message = const SnackBar(content: Text('Investment saved successfully'), backgroundColor: Colors.teal);
@@ -71,8 +72,8 @@ class _EditRatePageContentState extends State<_EditRatePageContent> with SingleT
     //       } else {
     //         if (context.mounted) Navigator.pop(context);
     //       }
-    //     },
-    //     child:
+    // },
+    // child:
     return Scaffold(
       appBar: AppBar(title: Text('Add / Edit Rate')),
       body: SafeArea(
@@ -96,7 +97,7 @@ class _EditRatePageContentState extends State<_EditRatePageContent> with SingleT
             // ),
 
             // ~ LOA picker
-            SizedBox(height: 300.0, child: LoaPicker()),
+            SizedBox(height: 300.0, child: LoaPicker(onPickup: (value) => cubit.getRatesOfLoa(value))),
 
             const Gap(iFormFieldsInterSpacing),
 
@@ -107,20 +108,38 @@ class _EditRatePageContentState extends State<_EditRatePageContent> with SingleT
               mainAxisSize: MainAxisSize.min,
               children: <Widget>[
                 Expanded(
-                  child: TextField(decoration: InputDecoration(hintText: 'PO/LOA Number')),
+                  child: BlocSelector<EditRateCubit, EditRateState, String?>(
+                    selector: (state) => state.loaNumber,
+                    builder: (context, loaNumber) {
+                      return Text(loaNumber ?? 'LOA / PO Number');
+                    },
+                  ),
                 ),
-                Expanded(child: EstimatorDatePicker(child: Text('Pick a date'))),
                 Expanded(
-                  child: TextField(
-                    decoration: InputDecoration(hintText: 'Rebate'),
-                    keyboardType: TextInputType.number,
-                    inputFormatters: <TextInputFormatter>[
-                      // FilteringTextInputFormatter.digitsOnly, // Blocks everything except 0-9
-                      FilteringTextInputFormatter.allow(
-                        RegExp(r'^\d*\.?\d*'),
-                      ), // Allows only digits and a single decimal point
-                      MaxValueTextInputFormatter(100), // Restrict maximum value to 100
-                    ],
+                  child: BlocSelector<EditRateCubit, EditRateState, DateTime?>(
+                    selector: (state) => state.date,
+                    builder: (context, date) {
+                      return EstimatorDatePicker(initialDate: date, child: Text(date?.toReadable() ?? 'Pick a date'));
+                    },
+                  ),
+                ),
+                Expanded(
+                  // child: TextField(
+                  //   decoration: InputDecoration(hintText: 'Rebate'),
+                  //   keyboardType: TextInputType.number,
+                  //   inputFormatters: <TextInputFormatter>[
+                  //     // FilteringTextInputFormatter.digitsOnly, // Blocks everything except 0-9
+                  //     FilteringTextInputFormatter.allow(
+                  //       RegExp(r'^\d*\.?\d*'),
+                  //     ), // Allows only digits and a single decimal point
+                  //     MaxValueTextInputFormatter(100), // Restrict maximum value to 100
+                  //   ],
+                  // ),
+                  child: BlocSelector<EditRateCubit, EditRateState, double?>(
+                    selector: (state) => state.rebate,
+                    builder: (context, rebate) {
+                      return Text('${rebate ?? 0}');
+                    },
                   ),
                 ),
               ],
@@ -206,6 +225,7 @@ class _EditRatePageContentState extends State<_EditRatePageContent> with SingleT
           ],
         ),
       ),
+      // ),
     );
   }
 

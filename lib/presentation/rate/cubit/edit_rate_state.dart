@@ -1,14 +1,13 @@
 // // ignore_for_file: public_member_api_docs, sort_constructors_first
 part of 'edit_rate_cubit.dart';
 
-enum EditRateStatus { initial, edited, error, saving, saved, failed }
+enum EditRateStatus { initial, loading, loaded, errorLoading, edited, saving, saved, errorSaving }
 
 class EditRateState extends Equatable {
   const EditRateState({
     this.status = EditRateStatus.initial,
-    this.id,
-    //     this.accountId,
-    //     this.accountError,
+    this.loaId,
+    this.loaNumber,
     //     this.qnty,
     //     this.qntyError,
     //     this.rate,
@@ -18,7 +17,8 @@ class EditRateState extends Equatable {
     //     this.autoAmount = true,
     //     this.type = RateType.invested,
     //     this.genre = AmcGenre.mf,
-    //     this.date,
+    this.date,
+    this.rebate,
     //     this.dateError,
     //     this.amc,
     //     this.amcError,
@@ -26,9 +26,9 @@ class EditRateState extends Equatable {
   });
 
   final EditRateStatus status;
-  final String? id;
-  //   final int? accountId;
-  //   final String? accountError;
+  // final String? id;
+  final String? loaId;
+  final String? loaNumber;
   //   final double? qnty;
   //   final String? qntyError;
   //   final double? rate;
@@ -38,13 +38,14 @@ class EditRateState extends Equatable {
   //   final bool autoAmount;
   //   final RateType type;
   //   final AmcGenre genre;
-  //   final DateTime? date;
+  final DateTime? date;
+  final double? rebate;
   //   final String? dateError;
   //   final InveslyAmc? amc;
   //   final String? amcError;
   //   final String? notes;
 
-  bool get isNewRate => id == null;
+  bool get isNewRate => loaId == null;
 
   //   bool get isAccountValid {
   //     if (accountId == null || accountError != null) return false;
@@ -74,8 +75,8 @@ class EditRateState extends Equatable {
 
   EditRateState copyWith({
     EditRateStatus? status,
-    int? accountId,
-    //     String? Function()? accountError,
+    String? loaId,
+    String? loaNumber,
     //     double? qnty,
     //     String? Function()? qntyError,
     //     double? rate,
@@ -85,7 +86,8 @@ class EditRateState extends Equatable {
     //     bool? autoAmount,
     //     RateType? type,
     //     AmcGenre? genre,
-    //     DateTime? date,
+    DateTime? date,
+    double? Function()? rebate,
     //     String? Function()? dateError,
     //     InveslyAmc? Function()? amc,
     //     String? Function()? amcError,
@@ -93,9 +95,9 @@ class EditRateState extends Equatable {
   }) {
     return EditRateState(
       status: status ?? this.status,
-      id: id,
-      //       accountId: accountId ?? this.accountId,
-      //       accountError: accountError != null ? accountError() : this.accountError, // Allows resetting to null
+      // id: id,
+      loaId: loaId ?? this.loaId,
+      loaNumber: loaNumber ?? this.loaNumber,
       //       qnty: qnty ?? this.qnty,
       //       qntyError: qntyError != null ? qntyError() : this.qntyError, // Allows resetting to null
       //       rate: rate ?? this.rate,
@@ -107,7 +109,8 @@ class EditRateState extends Equatable {
       //       autoAmount: autoAmount ?? this.autoAmount,
       //       type: type ?? this.type,
       //       genre: genre ?? this.genre,
-      //       date: date ?? this.date,
+      date: date ?? this.date,
+      rebate: rebate != null ? rebate() : this.rebate, // Allows resetting to null
       //       dateError: dateError != null ? dateError() : this.dateError, // Allows resetting to null
       //       amc: amc != null ? amc() : this.amc, // Allows resetting to null
       //       amcError: amcError != null ? amcError() : this.amcError, // Allows resetting to null
@@ -118,9 +121,9 @@ class EditRateState extends Equatable {
   @override
   List<Object?> get props => [
     status,
-    id,
-    //     accountId,
-    //     accountError,
+    // id,
+    loaId,
+    loaNumber,
     //     qnty,
     //     qntyError,
     //     rate,
@@ -130,7 +133,8 @@ class EditRateState extends Equatable {
     //     autoAmount,
     //     type,
     //     genre,
-    //     date,
+    date,
+    rebate,
     //     dateError,
     //     amc,
     //     amcError,
@@ -139,8 +143,8 @@ class EditRateState extends Equatable {
 }
 
 extension EditRateStateX on EditRateState {
-  bool get isError => status == EditRateStatus.error;
-  bool get isEdited => [EditRateStatus.edited, EditRateStatus.error].contains(status);
+  bool get isError => status == EditRateStatus.errorLoading;
+  bool get isEdited => [EditRateStatus.edited, EditRateStatus.errorLoading].contains(status);
   bool get isLoadingOrSuccess => [EditRateStatus.saving, EditRateStatus.saved].contains(status);
-  bool get isFailureOrSuccess => [EditRateStatus.failed, EditRateStatus.saved].contains(status);
+  bool get isFailureOrSuccess => [EditRateStatus.errorSaving, EditRateStatus.saved].contains(status);
 }

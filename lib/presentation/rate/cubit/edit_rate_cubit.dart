@@ -1,35 +1,57 @@
 import 'package:estimator/common_libs.dart';
 import 'package:estimator/database/repository.dart';
+import 'package:estimator/model/loa_model.dart';
 
 part 'edit_rate_state.dart';
 
 class EditRateCubit extends Cubit<EditRateState> {
   EditRateCubit({
     required this._repository,
-    //     InveslyTransaction? initialTransaction,
+    //     InveslyRate? initialRate,
     //     int? initialAccountId,
     //     InveslyAmc? initialAmc,
   }) : super(
          EditRateState(
-           //  id: initialTransaction?.id,
-           //            accountId: initialTransaction?.accountId ?? initialAccountId,
-           //            qnty: initialTransaction?.quantity,
-           //            rate: initialTransaction?.rate,
-           //            totalAmount: initialTransaction?.totalAmount,
-           //            autoAmount: [AmcGenre.mf, AmcGenre.stock].contains(initialTransaction?.amc.genre ?? AmcGenre.mf),
-           //            type: (initialTransaction?.totalAmount.isNegative ?? false)
-           //                ? (initialTransaction?.quantity?.isZero ?? true)
-           //                      ? TransactionType.dividend
-           //                      : TransactionType.redeemed
-           //                : TransactionType.invested,
-           //            genre: initialTransaction?.amc.genre ?? AmcGenre.mf,
-           //            date: initialTransaction?.investedOn ?? DateTime.now().startOfDay,
-           //            amc: initialTransaction?.amc ?? initialAmc,
-           //            notes: initialTransaction?.note,
+           //  id: initialRate?.id,
+           //            accountId: initialRate?.accountId ?? initialAccountId,
+           //            qnty: initialRate?.quantity,
+           //            rate: initialRate?.rate,
+           //            totalAmount: initialRate?.totalAmount,
+           //            autoAmount: [AmcGenre.mf, AmcGenre.stock].contains(initialRate?.amc.genre ?? AmcGenre.mf),
+           //            type: (initialRate?.totalAmount.isNegative ?? false)
+           //                ? (initialRate?.quantity?.isZero ?? true)
+           //                      ? RateType.dividend
+           //                      : RateType.redeemed
+           //                : RateType.invested,
+           //            genre: initialRate?.amc.genre ?? AmcGenre.mf,
+           //            date: initialRate?.investedOn ?? DateTime.now().startOfDay,
+           //            amc: initialRate?.amc ?? initialAmc,
+           //            notes: initialRate?.note,
          ),
        );
 
   final EstimatorRepository _repository;
+
+  void getRatesOfLoa(EstimatorLoa loa) async {
+    emit(state.copyWith(status: EditRateStatus.loading));
+
+    try {
+      final rates = await _repository.getRatesOfLoa(loa.id);
+
+      emit(
+        state.copyWith(
+          status: EditRateStatus.loaded,
+          loaId: loa.id,
+          loaNumber: loa.number,
+          date: loa.date,
+          rebate: () => loa.rebate,
+        ),
+      );
+    } on Exception catch (e) {
+      $logger.e(e);
+      emit(state.copyWith(status: EditRateStatus.errorLoading));
+    }
+  }
 
   //   void updateAccount(int accountId) {
   //     if (accountId.isNegative || accountId.isInfinite || accountId.isNaN) {
@@ -37,18 +59,18 @@ class EditRateCubit extends Cubit<EditRateState> {
   //       return;
   //     }
 
-  //     emit(state.copyWith(status: EditTransactionStatus.edited, accountId: accountId, accountError: () => null));
+  //     emit(state.copyWith(status: EditRateStatus.edited, accountId: accountId, accountError: () => null));
   //   }
 
   //   void updateAmc(InveslyAmc amc) {
-  //     emit(state.copyWith(status: EditTransactionStatus.edited, amc: () => amc, amcError: () => null));
+  //     emit(state.copyWith(status: EditRateStatus.edited, amc: () => amc, amcError: () => null));
   //   }
 
   //   void resetAmc() {
-  //     emit(state.copyWith(status: EditTransactionStatus.edited, amc: () => null));
+  //     emit(state.copyWith(status: EditRateStatus.edited, amc: () => null));
   //   }
 
-  //   void updateTransactionType(TransactionType type) {
+  //   void updateRateType(RateType type) {
   //     emit(state.copyWith(type: type));
   //   }
 
@@ -57,7 +79,7 @@ class EditRateCubit extends Cubit<EditRateState> {
   //   // }
 
   //   void updateDate(DateTime date) {
-  //     emit(state.copyWith(status: EditTransactionStatus.edited, date: date));
+  //     emit(state.copyWith(status: EditRateStatus.edited, date: date));
   //   }
 
   //   void updateRate(double rate) {
@@ -68,7 +90,7 @@ class EditRateCubit extends Cubit<EditRateState> {
 
   //     emit(
   //       state.copyWith(
-  //         status: EditTransactionStatus.edited,
+  //         status: EditRateStatus.edited,
   //         rate: rate,
   //         totalAmount: state.canEditAmount ? null : rate * (state.qnty ?? 0.0),
   //         rateError: () => null,
@@ -85,7 +107,7 @@ class EditRateCubit extends Cubit<EditRateState> {
 
   //     emit(
   //       state.copyWith(
-  //         status: EditTransactionStatus.edited,
+  //         status: EditRateStatus.edited,
   //         qnty: qnty,
   //         totalAmount: state.canEditAmount ? null : qnty * (state.rate ?? 0.0),
   //         qntyError: () => null,
@@ -105,7 +127,7 @@ class EditRateCubit extends Cubit<EditRateState> {
   //       return;
   //     }
 
-  //     emit(state.copyWith(status: EditTransactionStatus.edited, totalAmount: amount, totalAmountError: () => null));
+  //     emit(state.copyWith(status: EditRateStatus.edited, totalAmount: amount, totalAmountError: () => null));
   //   }
 
   //   void updateAutoAmountMode(bool value) {
@@ -113,11 +135,11 @@ class EditRateCubit extends Cubit<EditRateState> {
   //   }
 
   //   void updateNotes(String notes) {
-  //     emit(state.copyWith(status: EditTransactionStatus.edited, notes: notes));
+  //     emit(state.copyWith(status: EditRateStatus.edited, notes: notes));
   //   }
 
   //   Future<void> save() async {
-  //     emit(state.copyWith(status: EditTransactionStatus.saving));
+  //     emit(state.copyWith(status: EditRateStatus.saving));
 
   //     final accountError = state.isAccountValid ? null : state.accountError ?? 'Valid account is required';
   //     final amcError = state.isAmcValid ? null : state.amcError ?? 'AMC is required';
@@ -128,7 +150,7 @@ class EditRateCubit extends Cubit<EditRateState> {
   //     if (!state.isFormValid) {
   //       emit(
   //         state.copyWith(
-  //           status: EditTransactionStatus.error,
+  //           status: EditRateStatus.error,
   //           accountError: () => accountError,
   //           amcError: () => amcError,
   //           rateError: () => rateError,
@@ -139,23 +161,23 @@ class EditRateCubit extends Cubit<EditRateState> {
   //       return;
   //     }
 
-  //     final trn = TransactionInDb(
+  //     final trn = RateInDb(
   //       id: state.id ?? 0,
   //       accountId: state.accountId!,
   //       amcId: state.amc!.id,
   //       quantity: state.canEditRateAndQnty ? state.qnty ?? 0.0 : 0.0,
   //       rate: state.canEditRateAndQnty ? state.rate ?? 0.0 : 0.0,
-  //       totalAmount: state.type == TransactionType.invested ? state.totalAmount!.abs() : -state.totalAmount!.abs(),
+  //       totalAmount: state.type == RateType.invested ? state.totalAmount!.abs() : -state.totalAmount!.abs(),
   //       date: (state.date ?? DateTime.now().startOfDay).millisecondsSinceEpoch,
   //       note: state.notes,
   //     );
 
   //     try {
-  //       await _repository.saveTransaction(trn, state.isNewTransaction);
-  //       emit(state.copyWith(status: EditTransactionStatus.saved));
+  //       await _repository.saveRate(trn, state.isNewRate);
+  //       emit(state.copyWith(status: EditRateStatus.saved));
   //     } on Exception catch (e) {
   //       $logger.e(e);
-  //       emit(state.copyWith(status: EditTransactionStatus.failed));
+  //       emit(state.copyWith(status: EditRateStatus.failed));
   //     }
   //   }
 }

@@ -4,7 +4,9 @@ import 'package:estimator/database/repository.dart';
 import 'package:estimator/model/loa_model.dart';
 
 class LoaPicker extends StatefulWidget {
-  const LoaPicker({super.key});
+  const LoaPicker({super.key, this.onPickup});
+
+  final ValueChanged<EstimatorLoa>? onPickup;
 
   @override
   State<LoaPicker> createState() => _LoaPickerState();
@@ -48,6 +50,7 @@ class _LoaPickerState extends State<LoaPicker> {
                     return ListTile(
                       title: Text('${loa.number} dated ${loa.date.toReadable()}'),
                       subtitle: Text(loa.rebate?.toString() ?? '0.0%', maxLines: 2, overflow: TextOverflow.ellipsis),
+                      onTap: widget.onPickup != null ? () => widget.onPickup!.call(loa) : null,
                     );
                   }),
                   separatorBuilder: (_, _) => const SizedBox(height: 8.0),

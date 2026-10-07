@@ -1,7 +1,9 @@
 import 'dart:async';
 
+import 'package:estimator/common_libs.dart';
 import 'package:estimator/model/item_model.dart';
 import 'package:estimator/model/loa_model.dart';
+import 'package:estimator/model/rate_model.dart';
 
 import 'api.dart';
 import 'table_schema.dart';
@@ -22,6 +24,7 @@ class EstimatorRepository {
 
   final EstimatorApi _api;
 
+  // ~ Items related
   Future<List<EstimatorItem>> searchItems(String query) async {
     final searchTerm = query.trim();
     if (searchTerm.isEmpty) return const [];
@@ -36,6 +39,16 @@ class EstimatorRepository {
     return results.map((map) => EstimatorItem.fromDb(table.fromMap(map))).toList();
   }
 
+  Future<EstimatorItem?> getItem(String id) async {
+    final table = _api.itemTable;
+    final results = await _api.select(table, filter: SingleValueTableFilter<String>(table.idColumn, id));
+
+    if (results.isEmpty) return null;
+
+    return EstimatorItem.fromDb(table.fromMap(results.first));
+  }
+
+  // ~ LOA related
   Future<List<EstimatorLoa>> searchLoas(String query) async {
     final searchTerm = query.trim();
     if (searchTerm.isEmpty) return const [];
@@ -50,9 +63,77 @@ class EstimatorRepository {
     return results.map((map) => EstimatorLoa.fromDb(table.fromMap(map))).toList();
   }
 
-  // AccountTable get _accountTable => _api.accountTable;
-  // AmcTable get _amcTable => _api.amcTable;
-  // TransactionTable get _trnTable => _api.trnTable;
+  Future<EstimatorLoa?> getLoa(String id) async {
+    final table = _api.loaTable;
+    final results = await _api.select(table, filter: SingleValueTableFilter<String>(table.idColumn, id));
+
+    if (results.isEmpty) return null;
+
+    return EstimatorLoa.fromDb(table.fromMap(results.first));
+  }
+
+  // ~ Rate related
+  Future<List<EstimatorRate>> getRatesOfItem(String itemId) async {
+    final rateTable = _api.rateTable;
+    final itemTable = _api.itemTable;
+    final loaTable = _api.loaTable;
+
+    late final List<EstimatorRate> rates;
+    try {
+      final result = await _api.select(
+        rateTable,
+        join: [itemTable, loaTable],
+        filter: SingleValueTableFilter<String>(rateTable.itemIdColumn, itemId),
+        orderBy: {loaTable.dateColumn: true},
+      );
+
+      if (result.isEmpty) return List<EstimatorRate>.empty();
+
+      rates = result.map<EstimatorRate>((map) {
+        return EstimatorRate.fromDb(
+          rateTable.fromMap(map),
+          itemTable.fromMap(map[itemTable.type.toString().toCamelCase()] as Map<String, dynamic>),
+          loaTable.fromMap(map[loaTable.type.toString().toCamelCase()] as Map<String, dynamic>),
+        );
+      }).toList();
+    } on Exception catch (err) {
+      $logger.e(err);
+      rates = List<EstimatorRate>.empty();
+    }
+
+    return rates;
+  }
+
+  Future<List<EstimatorRate>> getRatesOfLoa(String loaId) async {
+    final rateTable = _api.rateTable;
+    final itemTable = _api.itemTable;
+    final loaTable = _api.loaTable;
+
+    late final List<EstimatorRate> rates;
+    try {
+      final result = await _api.select(
+        rateTable,
+        join: [itemTable, loaTable],
+        filter: SingleValueTableFilter<String>(rateTable.loaIdColumn, loaId),
+        orderBy: {loaTable.dateColumn: true},
+      );
+
+      if (result.isEmpty) return List<EstimatorRate>.empty();
+
+      rates = result.map<EstimatorRate>((map) {
+        return EstimatorRate.fromDb(
+          rateTable.fromMap(map),
+          itemTable.fromMap(map[itemTable.type.toString().toCamelCase()] as Map<String, dynamic>),
+          loaTable.fromMap(map[loaTable.type.toString().toCamelCase()] as Map<String, dynamic>),
+        );
+      }).toList();
+    } on Exception catch (err) {
+      $logger.e(err);
+      rates = List<EstimatorRate>.empty();
+    }
+
+    return rates;
+  }
 
   // Stream<TableEvent> get onDataChanged {
   //   return _api.onTableChange.where((event) => event.table == _trnTable);
