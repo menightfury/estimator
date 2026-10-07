@@ -39,6 +39,8 @@ class _EditRatePageContent extends StatefulWidget {
 }
 
 class _EditRatePageContentState extends State<_EditRatePageContent> with SingleTickerProviderStateMixin {
+  int _rateDetailsCount = 1;
+
   @override
   Widget build(BuildContext context) {
     final cubit = context.read<EditRateCubit>();
@@ -147,77 +149,12 @@ class _EditRatePageContentState extends State<_EditRatePageContent> with SingleT
 
             const Gap(iFormFieldsInterSpacing),
 
-            // ~~~ Rate Details ~~~
-            Column(
-              mainAxisSize: MainAxisSize.min,
-              spacing: iFormFieldsInterSpacing,
-              children: <Widget>[
-                Row(
-                  spacing: iFormFieldLabelSpacing,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisSize: MainAxisSize.min,
-                  children: <Widget>[
-                    Expanded(
-                      child: TextField(decoration: InputDecoration(hintText: 'Select Item')),
-                    ),
-                    Expanded(
-                      child: TextField(decoration: InputDecoration(hintText: 'Schedule Number')),
-                    ),
-                    Expanded(
-                      child: TextField(decoration: InputDecoration(hintText: 'Serial Number')),
-                    ),
-                  ],
-                ),
-                Row(
-                  spacing: iFormFieldLabelSpacing,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisSize: MainAxisSize.min,
-                  children: <Widget>[
-                    Expanded(
-                      child: TextField(
-                        decoration: InputDecoration(hintText: 'Tender Rate'),
-                        keyboardType: TextInputType.number,
-                        inputFormatters: <TextInputFormatter>[
-                          // FilteringTextInputFormatter.digitsOnly, // Blocks everything except 0-9
-                          FilteringTextInputFormatter.allow(
-                            RegExp(r'^\d*\.?\d*'),
-                          ), // Allows only digits and a single decimal point
-                        ],
-                      ),
-                    ),
-                    Expanded(
-                      child: TextField(
-                        decoration: InputDecoration(hintText: 'Offered Rate'),
-                        keyboardType: TextInputType.number,
-                        inputFormatters: <TextInputFormatter>[
-                          // FilteringTextInputFormatter.digitsOnly, // Blocks everything except 0-9
-                          FilteringTextInputFormatter.allow(
-                            RegExp(r'^\d*\.?\d*'),
-                          ), // Allows only digits and a single decimal point
-                        ],
-                      ),
-                    ),
-                    Expanded(
-                      child: TextField(
-                        decoration: InputDecoration(hintText: 'Offered Percentage (%)'),
-                        keyboardType: TextInputType.number,
-                        inputFormatters: <TextInputFormatter>[
-                          // FilteringTextInputFormatter.digitsOnly, // Blocks everything except 0-9
-                          FilteringTextInputFormatter.allow(
-                            RegExp(r'^\d*\.?\d*'),
-                          ), // Allows only digits and a single decimal point
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
+            for (var index = 0; index < _rateDetailsCount; index++) _buildRateDetails(index),
 
             Align(
               alignment: Alignment.topLeft,
               child: ElevatedButton.icon(
-                onPressed: () {},
+                onPressed: () => setState(() => _rateDetailsCount++),
                 label: const Text('Add item'),
                 icon: Icon(Icons.add_rounded),
               ),
@@ -226,6 +163,60 @@ class _EditRatePageContentState extends State<_EditRatePageContent> with SingleT
         ),
       ),
       // ),
+    );
+  }
+
+  Widget _buildRateDetails(int index) {
+    return Column(
+      key: ValueKey<int>(index),
+      mainAxisSize: MainAxisSize.min,
+      spacing: iFormFieldsInterSpacing,
+      children: <Widget>[
+        Row(
+          spacing: iFormFieldLabelSpacing,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          children: <Widget>[
+            Expanded(
+              child: TextField(decoration: InputDecoration(hintText: 'Select Item')),
+            ),
+            Expanded(
+              child: TextField(decoration: InputDecoration(hintText: 'Schedule Number')),
+            ),
+            Expanded(
+              child: TextField(decoration: InputDecoration(hintText: 'Serial Number')),
+            ),
+          ],
+        ),
+        Row(
+          spacing: iFormFieldLabelSpacing,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          children: <Widget>[
+            Expanded(
+              child: TextField(
+                decoration: InputDecoration(hintText: 'Tender Rate'),
+                keyboardType: TextInputType.number,
+                inputFormatters: <TextInputFormatter>[FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d*'))],
+              ),
+            ),
+            Expanded(
+              child: TextField(
+                decoration: InputDecoration(hintText: 'Offered Rate'),
+                keyboardType: TextInputType.number,
+                inputFormatters: <TextInputFormatter>[FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d*'))],
+              ),
+            ),
+            Expanded(
+              child: TextField(
+                decoration: InputDecoration(hintText: 'Offered Percentage (%)'),
+                keyboardType: TextInputType.number,
+                inputFormatters: <TextInputFormatter>[FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d*'))],
+              ),
+            ),
+          ],
+        ),
+      ],
     );
   }
 
