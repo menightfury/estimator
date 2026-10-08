@@ -52,7 +52,7 @@ class EstimatorRate extends RateInDb {
     required this.loa,
     super.loaSchedule,
     super.loaItemNumber,
-    required super.materialTenderRate,
+    super.materialTenderRate,
     super.materialOfferedRate,
     super.materialOfferedPercent,
     super.labourTenderRate,
