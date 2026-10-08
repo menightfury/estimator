@@ -25,7 +25,7 @@ class AppStyle {
       scaffoldBackgroundColor: colorScheme.surface,
       canvasColor: colorScheme.secondaryContainer,
       cardColor: colorScheme.secondaryContainer,
-      fontFamily: GoogleFonts.gabarito().fontFamily,
+      fontFamily: GoogleFonts.inter().fontFamily,
       // fontFamily: _primaryFont,
       dividerColor: colorScheme.primary.withAlpha(50),
       textTheme: TextTheme(

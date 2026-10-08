@@ -3,5 +3,6 @@
         "buildcontext",
         "Debouncer",
         "Loas"
-    ]
+    ],
+    "cmake.sourceDirectory": "E:/Apps/Estimator/estimator/windows"
 }
