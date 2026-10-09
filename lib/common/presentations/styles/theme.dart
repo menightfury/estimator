@@ -135,6 +135,8 @@ class AppStyle {
             borderSide: BorderSide(color: color),
           );
         }),
+        prefixIconColor: colorScheme.onSurface,
+        prefixIconConstraints: BoxConstraints(),
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ButtonStyle(

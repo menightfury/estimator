@@ -18,7 +18,11 @@ class _ItemPickerState extends State<_ItemPicker> {
           decoration: InputDecoration(
             border: InputBorder.none,
             hintText: 'Type to search',
-            prefixIcon: Icon(Icons.search_rounded),
+            prefixIcon: Padding(
+              padding: const EdgeInsetsDirectional.only(start: 16.0),
+              child: Icon(Icons.search_rounded, size: 18.0, color: AppColors.icon),
+            ),
+            // prefixIconConstraints: BoxConstraints(),
             suffix: IconButton(onPressed: () {}, icon: Icon(Icons.close_rounded)),
           ),
           onChanged: (value) => searchNotifier.search(value),
