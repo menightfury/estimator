@@ -7,6 +7,22 @@ import 'package:estimator/common/extensions/color_extension.dart';
 
 import 'package:estimator/constants.dart';
 
+class AppColors {
+  const AppColors._();
+
+  static const primaryColor = Color(0xFFFF7900);
+  static const background = Color(0xFFF7F2E1);
+  static const panel = Color(0xFFF8F3E4);
+  static const mainSurface = Color(0xFFFFFDF5);
+  static const border = Color(0xFFDED7C5);
+  static const text = Color(0xFF687985);
+  static const textDark = Color(0xFF566A77);
+  static const icon = Color(0xFF87949D);
+  static const subtle = Color(0xFFEFE9D8);
+  static const accent = Color(0xFFAA4C89);
+  static const connectionDot = Color(0xFFB996ED);
+}
+
 @immutable
 class AppStyle {
   // Singleton pattern
@@ -14,34 +30,37 @@ class AppStyle {
   static final instance = AppStyle._();
 
   // data for theme
-  // static const _primaryFont = 'Source Sans Pro';
+  static const _primaryFont = 'Inter';
   // static const _headerFont = 'Maragsa';
+
+  static const lightColorScheme = ColorScheme.light(primary: AppColors.primaryColor, outline: AppColors.border);
 
   ThemeData getTheme(ColorScheme colorScheme) {
     return ThemeData(
       useMaterial3: true,
       colorScheme: colorScheme,
       brightness: colorScheme.brightness,
-      scaffoldBackgroundColor: colorScheme.surface,
+      // scaffoldBackgroundColor: colorScheme.surface,
+      scaffoldBackgroundColor: AppColors.background,
       canvasColor: colorScheme.secondaryContainer,
       cardColor: colorScheme.secondaryContainer,
-      fontFamily: GoogleFonts.inter().fontFamily,
-      // fontFamily: _primaryFont,
-      dividerColor: colorScheme.primary.withAlpha(50),
+      // fontFamily: GoogleFonts.inter().fontFamily,
+      fontFamily: _primaryFont,
+      dividerColor: colorScheme.outline,
       textTheme: TextTheme(
         headlineLarge: TextStyle(fontSize: 26.0, fontWeight: FontWeight.w600),
         headlineMedium: TextStyle(fontSize: 22.0, fontWeight: FontWeight.w600),
         headlineSmall: TextStyle(fontSize: 20.0, fontWeight: FontWeight.w600),
         titleLarge: TextStyle(fontSize: 20.0, fontWeight: FontWeight.w600), // appbar title
-        titleMedium: TextStyle(fontSize: 18.0, fontWeight: FontWeight.w600), // textfield
-        bodyLarge: TextStyle(fontSize: 20.0, height: 1.25), // chip, ListTile title,
-        bodyMedium: TextStyle(fontSize: 18.0, height: 1.4), // body
+        titleMedium: TextStyle(fontSize: 14.0, fontWeight: FontWeight.w600), //
+        bodyLarge: TextStyle(fontSize: 14.0), // textfield, chip, ListTile title,
+        bodyMedium: TextStyle(fontSize: 12.0), // body
         bodySmall: TextStyle(fontSize: 14.0), // textfield helper
         labelLarge: TextStyle(fontSize: 18.0, height: 1.4, fontWeight: FontWeight.w600), // button, *-chip
         labelMedium: TextStyle(fontSize: 16.0, height: 1.4), // bottomNavBar
         labelSmall: TextStyle(fontSize: 13.0),
       ),
-      iconTheme: IconThemeData(color: colorScheme.onSurface),
+      iconTheme: IconThemeData(size: 18.0, color: colorScheme.onSurface),
       chipTheme: ChipThemeData(
         color: WidgetStateColor.resolveWith((state) {
           if (state.contains(WidgetState.error)) {
@@ -85,16 +104,16 @@ class AppStyle {
         // iconTheme: IconThemeData(color: colorScheme.onBackground),
       ),
       inputDecorationTheme: InputDecorationTheme(
-        filled: true,
-        fillColor: WidgetStateColor.resolveWith((state) {
-          if (state.contains(WidgetState.disabled)) {
-            return Colors.black12;
-          }
-          if (state.contains(WidgetState.error)) {
-            return colorScheme.errorContainer;
-          }
-          return colorScheme.secondaryContainer.lighten(50);
-        }),
+        // filled: true,
+        // fillColor: WidgetStateColor.resolveWith((state) {
+        //   if (state.contains(WidgetState.disabled)) {
+        //     return Colors.black12;
+        //   }
+        //   if (state.contains(WidgetState.error)) {
+        //     return colorScheme.errorContainer;
+        //   }
+        //   return colorScheme.secondaryContainer.lighten(50);
+        // }),
         contentPadding: iFormFieldContentPadding,
         isCollapsed: true,
         // isDense: true,
@@ -108,7 +127,7 @@ class AppStyle {
           } else if (states.contains(WidgetState.focused)) {
             color = colorScheme.primary;
           } else {
-            color = colorScheme.secondaryContainer;
+            color = colorScheme.outline;
           }
 
           return OutlineInputBorder(
@@ -116,26 +135,6 @@ class AppStyle {
             borderSide: BorderSide(color: color),
           );
         }),
-        // enabledBorder: OutlineInputBorder(
-        //   borderRadius: iTextFieldBorderRadius,
-        //   borderSide: BorderSide(width: 1.0, color: colorScheme.primary.withOpacity(0.38)),
-        // ),
-        // focusedBorder: OutlineInputBorder(
-        //   borderRadius: iTextFieldBorderRadius,
-        //   borderSide: BorderSide(width: 1.0, color: colorScheme.primary),
-        // ),
-        // disabledBorder: OutlineInputBorder(
-        //   borderRadius: iTextFieldBorderRadius,
-        //   borderSide: BorderSide(width: 1.0, color: colorScheme.onSurface.withOpacity(0.38)),
-        // ),
-        // errorBorder: OutlineInputBorder(
-        //   borderRadius: iTextFieldBorderRadius,
-        //   borderSide: BorderSide(width: 1.0, color: colorScheme.error),
-        // ),
-        // focusedErrorBorder: OutlineInputBorder(
-        //   borderRadius: iTextFieldBorderRadius,
-        //   borderSide: BorderSide(width: 1.0, color: colorScheme.error),
-        // ),
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ButtonStyle(

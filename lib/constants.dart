@@ -7,15 +7,15 @@ final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 const iPaddingFromScreenEdge = EdgeInsets.symmetric(horizontal: 12.0);
 
 const iButtonPadding = EdgeInsetsGeometry.symmetric(horizontal: 20.0, vertical: 16.0);
-const iButtonBorderRadius = BorderRadius.all(Radius.circular(16.0));
-const iButtonSize = Size(96.0, 48.0);
+const iButtonBorderRadius = BorderRadius.all(Radius.circular(8.0));
+const iButtonSize = Size(48.0, 24.0);
 const iCardBorderRadius = BorderRadius.all(Radius.circular(16.0));
 const iCardPadding = EdgeInsets.symmetric(horizontal: 20.0, vertical: 16.0);
 const iTileBorderRadius = BorderRadius.all(Radius.circular(4.0));
 const iFormFieldLabelSpacing = 6.0;
 const iFormFieldsInterSpacing = 12.0;
-const iFormFieldContentPadding = EdgeInsets.symmetric(horizontal: 12.0, vertical: 16.0);
-const iTextFieldBorderRadius = BorderRadius.all(Radius.circular(16.0));
+const iFormFieldContentPadding = EdgeInsets.symmetric(horizontal: 8.0, vertical: 12.0);
+const iTextFieldBorderRadius = BorderRadius.all(Radius.circular(8.0));
 const iFormFieldMinimumHeight = 58.0;
 
 const iThemeChangeDuration = Duration(milliseconds: 400);

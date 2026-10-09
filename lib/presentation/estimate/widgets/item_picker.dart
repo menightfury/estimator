@@ -1,52 +1,13 @@
-part of '../create_estimate.dart';
+part of '../create_estimate_page.dart';
 
-class _ItemSearch extends StatefulWidget {
-  const _ItemSearch({super.key});
+class _ItemPicker extends StatefulWidget {
+  const _ItemPicker({super.key});
 
   @override
-  State<_ItemSearch> createState() => __ItemSearchState();
+  State<_ItemPicker> createState() => _ItemPickerState();
 }
 
-class __ItemSearchState extends State<_ItemSearch> {
-  // List<ItemInDb> _items = const [];
-  // String _query = '';
-  // String? _searchError;
-  // bool _isSearching = false;
-  // int _searchRequest = 0;
-
-  // Future<void> _searchItems(String query) async {
-  //   final request = ++_searchRequest;
-  //   _query = query.trim();
-  //   if (_query.isEmpty) {
-  //     setState(() {
-  //       _items = const [];
-  //       _searchError = null;
-  //       _isSearching = false;
-  //     });
-  //     return;
-  //   }
-
-  //   setState(() {
-  //     _searchError = null;
-  //     _isSearching = true;
-  //   });
-
-  //   try {
-  //     final items = await EstimatorRepository.instance.searchItems(query);
-  //     if (!mounted || request != _searchRequest) return;
-  //     setState(() {
-  //       _items = items;
-  //       _isSearching = false;
-  //     });
-  //   } on Exception catch (error) {
-  //     if (!mounted || request != _searchRequest) return;
-  //     setState(() {
-  //       _searchError = 'Search failed: $error';
-  //       _isSearching = false;
-  //     });
-  //   }
-  // }
-
+class _ItemPickerState extends State<_ItemPicker> {
   @override
   Widget build(BuildContext context) {
     final searchNotifier = ItemSearchNotifier();
@@ -54,9 +15,15 @@ class __ItemSearchState extends State<_ItemSearch> {
     return Column(
       children: <Widget>[
         TextField(
-          decoration: const InputDecoration(hintText: 'Type to search'),
+          decoration: InputDecoration(
+            border: InputBorder.none,
+            hintText: 'Type to search',
+            prefixIcon: Icon(Icons.search_rounded),
+            suffix: IconButton(onPressed: () {}, icon: Icon(Icons.close_rounded)),
+          ),
           onChanged: (value) => searchNotifier.search(value),
         ),
+        EstimatorDivider(),
         Expanded(
           child: ListenableBuilder(
             listenable: searchNotifier,

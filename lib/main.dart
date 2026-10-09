@@ -52,7 +52,7 @@ class _AppView extends StatelessWidget {
     return MaterialApp(
       title: 'Estimator',
       debugShowCheckedModeBanner: false,
-      theme: AppStyle.instance.getTheme(ColorScheme.light()),
+      theme: AppStyle.instance.getTheme(AppStyle.lightColorScheme),
       // darkTheme: AppStyle.instance.getTheme(darkScheme),
       // themeMode: state.isDarkMode ? ThemeMode.dark : ThemeMode.light,
       home: const SplashPage(),

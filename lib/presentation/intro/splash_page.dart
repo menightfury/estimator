@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:estimator/common_libs.dart';
 import 'package:estimator/main.dart';
 import 'package:estimator/presentation/dashboard/dashboard.dart';
-import 'package:estimator/presentation/estimate/create_estimate.dart';
 
 class SplashPage extends StatefulWidget {
   const SplashPage({super.key});
