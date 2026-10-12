@@ -14,7 +14,7 @@ const iCardPadding = EdgeInsets.symmetric(horizontal: 20.0, vertical: 16.0);
 const iTileBorderRadius = BorderRadius.all(Radius.circular(4.0));
 const iFormFieldLabelSpacing = 6.0;
 const iFormFieldsInterSpacing = 12.0;
-const iFormFieldContentPadding = EdgeInsets.symmetric(horizontal: 8.0, vertical: 12.0);
+const iFormFieldContentPadding = EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0);
 const iTextFieldBorderRadius = BorderRadius.all(Radius.circular(8.0));
 const iFormFieldMinimumHeight = 58.0;
 

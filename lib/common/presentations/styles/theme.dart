@@ -33,17 +33,21 @@ class AppStyle {
   static const _primaryFont = 'Inter';
   // static const _headerFont = 'Maragsa';
 
-  static const lightColorScheme = ColorScheme.light(primary: AppColors.primaryColor, outline: AppColors.border);
+  static const lightColorScheme = ColorScheme.light(
+    primary: AppColors.primaryColor,
+    secondary: AppColors.accent,
+    surface: AppColors.background,
+    outline: AppColors.border,
+  );
 
   ThemeData getTheme(ColorScheme colorScheme) {
     return ThemeData(
       useMaterial3: true,
       colorScheme: colorScheme,
       brightness: colorScheme.brightness,
-      // scaffoldBackgroundColor: colorScheme.surface,
-      scaffoldBackgroundColor: AppColors.background,
-      canvasColor: colorScheme.secondaryContainer,
-      cardColor: colorScheme.secondaryContainer,
+      scaffoldBackgroundColor: colorScheme.surface,
+      canvasColor: colorScheme.surface,
+      cardColor: colorScheme.surface,
       // fontFamily: GoogleFonts.inter().fontFamily,
       fontFamily: _primaryFont,
       dividerColor: colorScheme.outline,
@@ -53,9 +57,9 @@ class AppStyle {
         headlineSmall: TextStyle(fontSize: 20.0, fontWeight: FontWeight.w600),
         titleLarge: TextStyle(fontSize: 20.0, fontWeight: FontWeight.w600), // appbar title
         titleMedium: TextStyle(fontSize: 14.0, fontWeight: FontWeight.w600), //
-        bodyLarge: TextStyle(fontSize: 14.0), // textfield, chip, ListTile title,
+        bodyLarge: TextStyle(fontSize: 12.0), // textfield, chip, ListTile title,
         bodyMedium: TextStyle(fontSize: 12.0), // body
-        bodySmall: TextStyle(fontSize: 14.0), // textfield helper
+        bodySmall: TextStyle(fontSize: 10.0), // textfield helper
         labelLarge: TextStyle(fontSize: 18.0, height: 1.4, fontWeight: FontWeight.w600), // button, *-chip
         labelMedium: TextStyle(fontSize: 16.0, height: 1.4), // bottomNavBar
         labelSmall: TextStyle(fontSize: 13.0),
@@ -115,8 +119,8 @@ class AppStyle {
         //   return colorScheme.secondaryContainer.lighten(50);
         // }),
         contentPadding: iFormFieldContentPadding,
-        isCollapsed: true,
-        // isDense: true,
+        // isCollapsed: true,
+        isDense: true,
         hintStyle: const TextStyle(color: Colors.black38),
         border: WidgetStateInputBorder.resolveWith((states) {
           late final Color color;
@@ -135,8 +139,8 @@ class AppStyle {
             borderSide: BorderSide(color: color),
           );
         }),
-        prefixIconColor: colorScheme.onSurface,
-        prefixIconConstraints: BoxConstraints(),
+        prefixIconColor: AppColors.icon,
+        // prefixIconConstraints: BoxConstraints(),
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ButtonStyle(
@@ -239,7 +243,7 @@ class AppStyle {
       cardTheme: CardThemeData(
         shape: RoundedRectangleBorder(borderRadius: iCardBorderRadius),
         elevation: 1.0,
-        color: colorScheme.secondaryContainer,
+        color: colorScheme.surface,
       ),
     );
   }

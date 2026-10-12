@@ -10,6 +10,7 @@ import 'package:estimator/model/estimate_model.dart';
 import 'package:estimator/model/item_model.dart';
 import 'package:estimator/model/loa_model.dart';
 import 'package:estimator/model/rate_model.dart';
+import 'package:flutter/rendering.dart';
 
 import 'cubit/create_estimate_cubit.dart';
 
@@ -286,6 +287,7 @@ class _LeftSection extends StatelessWidget {
                     builder: (context) => Dialog(
                       shape: RoundedRectangleBorder(borderRadius: BorderRadiusGeometry.circular(8.0)),
                       constraints: BoxConstraints(minWidth: 640.0, maxWidth: 640.0, minHeight: 500.0, maxHeight: 500.0),
+                      clipBehavior: Clip.antiAlias,
                       child: _ItemPicker(),
                     ),
                   );

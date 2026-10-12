@@ -91,12 +91,14 @@ class _LinePainter extends CustomPainter {
     required this.axis,
   });
 
+  bool get isHorizontal => axis == Axis.horizontal;
+
   @override
   void paint(Canvas canvas, Size size) {
     final Paint paint = Paint()
-      ..style = PaintingStyle.fill
+      ..style = PaintingStyle.stroke
       ..strokeWidth = thickness
-      ..strokeCap = StrokeCap.round;
+      ..isAntiAlias = false;
 
     // Apply gradient shader if multiple colors are provided
     if (colors.length > 1) {
@@ -114,35 +116,23 @@ class _LinePainter extends CustomPainter {
       paint.color = colors.first;
     }
 
-    double position = 0.0;
-    final List<Offset> dashArray = [];
-    // set the starting position
-    if (axis == Axis.horizontal) {
-      dashArray.add(Offset(position, size.height / 2));
-    } else {
-      dashArray.add(Offset(size.width / 2, position));
-    }
+    final List<Offset> dashArray = [Offset.zero];
 
+    double position = 0.0;
     if (dashGap > 0) {
       bool isGap = false;
 
-      while (position < (axis == Axis.horizontal ? size.width : size.height)) {
+      while (position < (isHorizontal ? size.width : size.height)) {
         position += isGap ? dashGap + thickness : dashWidth;
-        if (axis == Axis.horizontal) {
-          dashArray.add(Offset(position, size.height / 2));
-        } else {
-          dashArray.add(Offset(size.width / 2, position));
-        }
+        isHorizontal ? dashArray.add(Offset(position, 0)) : dashArray.add(Offset(0, position));
+
         isGap = !isGap;
       }
     }
+
     // set the last position
     if (dashArray.length.isOdd) {
-      if (axis == Axis.horizontal) {
-        dashArray.add(Offset(size.width, size.height / 2));
-      } else {
-        dashArray.add(Offset(size.width / 2, size.height));
-      }
+      isHorizontal ? dashArray.add(Offset(size.width, 0)) : dashArray.add(Offset(0, size.height));
     }
 
     // Draw actual dotted line segment
