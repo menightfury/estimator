@@ -17,17 +17,11 @@ class Estimate extends Equatable {
 }
 
 class EstimateItem extends Equatable {
-  const EstimateItem({
-    required this.id,
-    required this.item,
-    required this.description,
-    required this.quantity,
-    required this.rates,
-  });
+  const EstimateItem({required this.id, required this.item, this.description, this.quantity = 0, this.rates = const []});
 
   final String id; // ItemInDb id
   final EstimatorItem item;
-  final String description; // User can update description during preparation of estimate
+  final String? description; // User can update description during preparation of estimate
   final double quantity;
   final List<EstimatorRate> rates;
 
@@ -35,5 +29,5 @@ class EstimateItem extends Equatable {
   bool get stringify => true;
 
   @override
-  List<Object> get props => [id, item, description, quantity, rates];
+  List<Object?> get props => [id, item, description, quantity, rates];
 }

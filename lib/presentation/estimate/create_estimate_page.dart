@@ -36,7 +36,6 @@ class _CreateEstimatePageContent extends StatefulWidget {
 }
 
 class _CreateEstimatePageContentState extends State<_CreateEstimatePageContent> {
-  bool visualTab = true;
   double leftSidebarWidth = 260;
   double rightPanelWidth = 360;
 
@@ -105,15 +104,7 @@ class _CreateEstimatePageContentState extends State<_CreateEstimatePageContent> 
                       },
                     ),
 
-                    SizedBox(
-                      width: visibleRightWidth,
-                      child: _RightPanel(
-                        visualTab: visualTab,
-                        onTabChanged: (visual) {
-                          setState(() => visualTab = visual);
-                        },
-                      ),
-                    ),
+                    SizedBox(width: visibleRightWidth, child: _RightPanel()),
                   ],
                 ),
               ),
@@ -288,20 +279,23 @@ class _LeftSection extends StatelessWidget {
                       shape: RoundedRectangleBorder(borderRadius: BorderRadiusGeometry.circular(8.0)),
                       constraints: BoxConstraints(minWidth: 640.0, maxWidth: 640.0, minHeight: 500.0, maxHeight: 500.0),
                       clipBehavior: Clip.antiAlias,
-                      child: _ItemPicker(),
+                      child: _ItemPicker(
+                        onItemSelected: (item) {
+                          final estItem = EstimateItem(id: item.id, item: EstimatorItem.fromDb(item));
+                          cubit.addItem(estItem);
+                          Navigator.of(context).pop();
+                        },
+                      ),
                     ),
                   );
                 },
-                icon: const Icon(Icons.add_rounded, color: AppColors.icon),
+                icon: const Icon(Icons.add_rounded),
               ),
-              IconButton(
-                onPressed: () {},
-                icon: Icon(Icons.search_rounded, color: AppColors.icon),
-              ),
+              IconButton(onPressed: () {}, icon: Icon(Icons.search_rounded)),
             ],
           ),
 
-          // ~ Items
+          // ~ Items List
           Expanded(
             child: BlocBuilder<CreateEstimateCubit, CreateEstimateState>(
               builder: (context, state) {
@@ -422,11 +416,7 @@ class _TablePreview extends StatelessWidget {
                 style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600, color: AppColors.textDark),
               ),
               const SizedBox(height: 14),
-              const Text(
-                'Table selected. Replace this widget with your editable '
-                'data grid or table view.',
-                style: TextStyle(fontSize: 13, color: AppColors.text),
-              ),
+              const Text('Description goes here.'),
             ],
           ),
         ),
@@ -436,70 +426,83 @@ class _TablePreview extends StatelessWidget {
 }
 
 class _RightPanel extends StatelessWidget {
-  final bool visualTab;
-  final ValueChanged<bool> onTabChanged;
-
-  const _RightPanel({required this.visualTab, required this.onTabChanged});
+  const _RightPanel({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: <Widget>[
-        const SizedBox(height: 26),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 18),
-          child: Text(
-            'Pending Changes',
-            style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: AppColors.text),
-          ),
-        ),
-        const SizedBox(height: 4),
-        Padding(
-          padding: const EdgeInsets.only(left: 16),
-          child: Row(
-            children: [
-              _PanelTab(label: 'Visual', selected: visualTab, onTap: () => onTabChanged(true)),
-              _PanelTab(label: 'SQL', selected: !visualTab, onTap: () => onTabChanged(false)),
-            ],
-          ),
-        ),
-        Expanded(
-          child: Center(
-            child: Text(
-              visualTab ? 'No pending changes' : 'SQL preview is empty',
-              style: const TextStyle(fontSize: 14, color: Color(0xFF8998A1)),
+    final dummyRate = EstimatorRate(
+      id: 'rate-id-1',
+      item: EstimatorItem(
+        id: '8649df70-bd8e-11f1-a76a-37da4ed8df4d',
+        name: 'HT 11kV cable: 3 x 150sqmm',
+        description: 'Supply of XLPE insulated, PVC outer sheathed, galvanized steel wire armoured HT 3 core 150 sq.mm Aluminum conductor cable of 11kV grade having ISI marked & conforming to IS:7098 (Part-2) of latest amendment',
+        unit: 'mtr',
+      ),
+      loa: EstimatorLoa(
+        id: 'a961c2e0-bd91-11f1-a76a-37da4ed8df4d',
+        number: 'GEMC-511687787515390',
+        date: DateTime.fromMillisecondsSinceEpoch(1788134400 * 1000),
+      ),
+      materialTenderRate: 1450,
+    );
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 12.0),
+      child: Column(
+        spacing: 4.0,
+        children: <Widget>[
+          Text('Rates'),
+          // ~ Rates
+          Expanded(
+            child: ListView.separated(
+              itemBuilder: (context, index) {
+                // final item = items[index];
+                return _RateTileView(
+                  rate: dummyRate,
+                  isSelected: false,
+                  // isSelected: state.selectedItem == item,
+                  // onTap: () => cubit.updateSelectedItem(item),
+                );
+              },
+              // itemCount: items.length,
+              itemCount: 10,
+              separatorBuilder: (context, index) => SizedBox(height: 8.0),
             ),
           ),
-        ),
-      ],
+
+          // ~ Summery
+          Text('Summery goes here: Average rate, min rate, max rate etc.'),
+        ],
+      ),
     );
   }
 }
 
-class _PanelTab extends StatelessWidget {
-  final String label;
-  final bool selected;
-  final VoidCallback onTap;
+class _RateTileView extends StatelessWidget {
+  final EstimatorRate rate;
+  final bool isSelected;
+  final VoidCallback? onTap;
 
-  const _PanelTab({required this.label, required this.selected, required this.onTap});
+  const _RateTileView({required this.rate, required this.isSelected, this.onTap, super.key});
 
   @override
   Widget build(BuildContext context) {
     return Material(
-      color: selected ? const Color(0xFFF0EADC) : Colors.transparent,
-      borderRadius: BorderRadius.circular(6),
+      color: isSelected ? const Color(0xFFF0E9D8) : Colors.transparent,
       child: InkWell(
         onTap: onTap,
-        borderRadius: BorderRadius.circular(6),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-          child: Text(
-            label,
-            style: TextStyle(
-              fontSize: 12,
-              color: selected ? AppColors.textDark : AppColors.text,
-              fontWeight: selected ? FontWeight.w500 : FontWeight.w400,
-            ),
+        hoverColor: const Color(0xFFF2ECDE),
+        child: SizedBox(
+          height: 42,
+          child: Row(
+            children: [
+              const SizedBox(width: 20),
+              const Icon(Icons.chevron_right_rounded, size: 15, color: AppColors.icon),
+              const SizedBox(width: 12),
+              const Icon(Icons.table_chart_outlined, size: 16, color: AppColors.icon),
+              const SizedBox(width: 10),
+              Text(rate.item.name, style: const TextStyle(fontSize: 13, color: AppColors.text)),
+            ],
           ),
         ),
       ),
@@ -642,7 +645,7 @@ void exportToExcel() async {
       estSheet.merge(
         CellIndex.indexByString('B$rowIndex'),
         CellIndex.indexByString('B$endRowIndex'),
-        customValue: TextCellValue(item.description),
+        customValue: TextCellValue(item.description ?? item.item.description),
       );
       // Qnty
       estSheet.merge(CellIndex.indexByString('C$rowIndex'), CellIndex.indexByString('C$endRowIndex'));
