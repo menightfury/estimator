@@ -49,6 +49,7 @@ class _CreateEstimatePageContentState extends State<_CreateEstimatePageContent> 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(),
       body: LayoutBuilder(
         builder: (context, constraints) {
           final rightWidth = rightPanelWidth;

@@ -5,7 +5,7 @@ import 'package:estimator/constants.dart';
 extension LabelOfWidget on Widget {
   Widget withLabel(String label, {TextStyle? labelStyle, EdgeInsetsGeometry? labelPadding}) {
     final defaultLabelStyle = TextStyle(
-      fontSize: 16.0,
+      fontSize: 10.0,
       fontWeight: FontWeight.w600,
       height: 1.4,
       color: const Color(0xFF757575),

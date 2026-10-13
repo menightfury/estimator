@@ -1,5 +1,6 @@
 import 'package:estimator/common_libs.dart';
 import 'package:estimator/presentation/estimate/create_estimate_page.dart';
+import 'package:estimator/presentation/item/edit_item.dart';
 import 'package:estimator/presentation/rate/edit_rate.dart';
 
 class DashboardPage extends StatelessWidget {
@@ -19,6 +20,8 @@ class DashboardPage extends StatelessWidget {
             ),
 
             ElevatedButton(onPressed: () => context.push(const EditRatePage()), child: const Text('Edit Rate')),
+
+            ElevatedButton(onPressed: () => context.push(const EditItemPage()), child: const Text('Edit Item')),
           ],
         ),
       ),

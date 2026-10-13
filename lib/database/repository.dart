@@ -39,6 +39,14 @@ class EstimatorRepository {
     return results.map((map) => EstimatorItem.fromDb(table.fromMap(map))).toList();
   }
 
+  Future<void> saveItem(ItemInDb item, {required bool isNew}) async {
+    if (isNew) {
+      await _api.insert(_api.itemTable, item);
+    } else {
+      await _api.update(_api.itemTable, item);
+    }
+  }
+
   Future<EstimatorItem?> getItem(String id) async {
     final table = _api.itemTable;
     final results = await _api.select(table, filter: SingleValueTableFilter<String>(table.idColumn, id));

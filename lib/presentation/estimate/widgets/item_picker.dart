@@ -3,7 +3,7 @@ part of '../create_estimate_page.dart';
 class _ItemPicker extends StatefulWidget {
   const _ItemPicker({super.key, this.onItemSelected});
 
-  final ValueChanged<ItemInDb>? onItemSelected;
+  final ValueChanged<EstimatorItem>? onItemSelected;
 
   @override
   State<_ItemPicker> createState() => _ItemPickerState();
@@ -16,7 +16,7 @@ class _ItemPickerState extends State<_ItemPicker> {
   late final ValueNotifier<int> _highlightedIndexNotifier;
   String? _lastFieldText;
 
-  Iterable<ItemInDb> _options = Iterable<ItemInDb>.empty();
+  Iterable<EstimatorItem> _options = Iterable<EstimatorItem>.empty();
 
   @override
   void initState() {
@@ -179,6 +179,7 @@ class _ItemPickerState extends State<_ItemPicker> {
                                   overflow: TextOverflow.ellipsis,
                                   style: context.textTheme.bodySmall,
                                 ),
+                                trailing: _TypeBadge(type: item.type ?? EstimatorItemType.both),
                                 onTap: () => widget.onItemSelected?.call(item),
                                 selected: highlight,
                                 hoverColor: Colors.amber,
@@ -203,23 +204,43 @@ class _ItemPickerState extends State<_ItemPicker> {
   }
 }
 
+class _TypeBadge extends StatelessWidget {
+  const _TypeBadge({required this.type});
+  final EstimatorItemType type;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+      decoration: BoxDecoration(
+        color: type.color(context).withAlpha(30),
+        borderRadius: const BorderRadius.all(Radius.circular(4)),
+      ),
+      child: Text(
+        type.title,
+        style: context.textTheme.bodySmall?.copyWith(color: type.color(context), fontWeight: FontWeight.w600),
+      ),
+    );
+  }
+}
+
 enum ItemSearchStateStatus { initial, empty, loading, success, error }
 
 class ItemSearchNotifier extends ChangeNotifier {
   ItemSearchNotifier()
-    : _amcCache = {},
+    : _itemCache = {},
       _debouncer = Debouncer(2.seconds),
       _status = ItemSearchStateStatus.initial,
       _results = const [];
 
-  final Map<String, List<ItemInDb>> _amcCache;
+  final Map<String, List<EstimatorItem>> _itemCache;
   final Debouncer _debouncer;
 
   ItemSearchStateStatus _status;
   ItemSearchStateStatus get status => _status;
 
-  List<ItemInDb> _results;
-  List<ItemInDb> get results => _results;
+  List<EstimatorItem> _results;
+  List<EstimatorItem> get results => _results;
 
   Future<void> search(String query) async {
     final q = query.trim();
@@ -231,7 +252,7 @@ class ItemSearchNotifier extends ChangeNotifier {
     }
 
     final key = q.toLowerCase();
-    final cachedResult = _amcCache[key];
+    final cachedResult = _itemCache[key];
     if (cachedResult != null) {
       _status = ItemSearchStateStatus.success;
       _results = cachedResult;
@@ -249,7 +270,7 @@ class ItemSearchNotifier extends ChangeNotifier {
       $logger.d(results);
       _status = ItemSearchStateStatus.success;
       _results = results;
-      _amcCache[key] = results;
+      _itemCache[key] = results;
     } on Exception catch (_) {
       _status = ItemSearchStateStatus.error;
       _results = const [];

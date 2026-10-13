@@ -52,17 +52,18 @@ class AppStyle {
       fontFamily: _primaryFont,
       dividerColor: colorScheme.outline,
       textTheme: TextTheme(
-        headlineLarge: TextStyle(fontSize: 26.0, fontWeight: FontWeight.w600),
-        headlineMedium: TextStyle(fontSize: 22.0, fontWeight: FontWeight.w600),
-        headlineSmall: TextStyle(fontSize: 20.0, fontWeight: FontWeight.w600),
-        titleLarge: TextStyle(fontSize: 20.0, fontWeight: FontWeight.w600), // appbar title
+        // headlineLarge: TextStyle(fontSize: 32.0, fontWeight: FontWeight.w600),
+        // headlineMedium: TextStyle(fontSize: 28.0, fontWeight: FontWeight.w600),
+        // headlineSmall: TextStyle(fontSize: 24.0, fontWeight: FontWeight.w600),
+        titleLarge: TextStyle(fontSize: 18.0, fontWeight: FontWeight.w600), // appbar title
         titleMedium: TextStyle(fontSize: 14.0, fontWeight: FontWeight.w600), //
-        bodyLarge: TextStyle(fontSize: 12.0), // textfield, chip, ListTile title,
+        titleSmall: TextStyle(fontSize: 12.0, fontWeight: FontWeight.w600), //
+        bodyLarge: TextStyle(fontSize: 14.0), // textfield, chip, ListTile title,
         bodyMedium: TextStyle(fontSize: 12.0), // body
-        bodySmall: TextStyle(fontSize: 10.0), // textfield helper
-        labelLarge: TextStyle(fontSize: 18.0, height: 1.4, fontWeight: FontWeight.w600), // button, *-chip
-        labelMedium: TextStyle(fontSize: 16.0, height: 1.4), // bottomNavBar
-        labelSmall: TextStyle(fontSize: 13.0),
+        bodySmall: TextStyle(fontSize: 11.0), // textfield helper
+        labelLarge: TextStyle(fontSize: 12.0, height: 1.4, fontWeight: FontWeight.w600), // button, *-chip
+        labelMedium: TextStyle(fontSize: 11.0, height: 1.4), // bottomNavBar
+        labelSmall: TextStyle(fontSize: 10.0),
       ),
       iconTheme: IconThemeData(size: 18.0, color: colorScheme.onSurface),
       chipTheme: ChipThemeData(
