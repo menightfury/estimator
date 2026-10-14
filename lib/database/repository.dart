@@ -25,6 +25,17 @@ class EstimatorRepository {
   final EstimatorApi _api;
 
   // ~ Items related
+  Future<List<EstimatorItem>> getItems() async {
+    final table = _api.itemTable;
+    final results = await _api.select(table, orderBy: {table.nameColumn: false});
+
+    return results.map((map) => EstimatorItem.fromDb(table.fromMap(map))).toList();
+  }
+
+  Stream<List<EstimatorItem>> fetchItems() {
+    return _api.onTableChange.where((event) => event.table == _api.itemTable).asyncMap((_) => getItems());
+  }
+
   Future<List<EstimatorItem>> searchItems(String query) async {
     final searchTerm = query.trim();
     if (searchTerm.isEmpty) return const [];
@@ -143,9 +154,7 @@ class EstimatorRepository {
     return rates;
   }
 
-  // Stream<TableEvent> get onDataChanged {
-  //   return _api.onTableChange.where((event) => event.table == _trnTable);
-  // }
+  Stream<TableEvent> get onDataChanged => _api.onTableChange;
 
   // /// Get transactions
   // Future<List<InveslyTransaction>> getTransactions({

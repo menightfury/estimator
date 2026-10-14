@@ -1,5 +1,4 @@
 import 'package:estimator/common/extensions/widget_extension.dart';
-import 'package:estimator/common/widgets/searchable_dropdown.dart';
 import 'package:estimator/common/widgets/searchable_list_view.dart';
 import 'package:estimator/common_libs.dart';
 import 'package:estimator/database/repository.dart';

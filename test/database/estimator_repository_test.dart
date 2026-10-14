@@ -38,6 +38,13 @@ void main() {
   });
 
   test('searchItems finds partial names without regard to case', () async {
+    final allItems = await repository.getItems();
+    expect(
+      allItems.map((item) => item.name),
+      containsAll(['Concrete Mix', 'concrete block', 'Timber Plank']),
+    );
+    expect(allItems, hasLength(3));
+
     final results = await repository.searchItems('CONCRETE');
 
     expect(results.map((item) => item.name), containsAll(['Concrete Mix', 'concrete block']));
