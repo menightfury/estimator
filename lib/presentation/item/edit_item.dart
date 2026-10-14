@@ -1,17 +1,15 @@
 import 'package:estimator/common/extensions/widget_extension.dart';
+import 'package:estimator/common/widgets/searchable_dropdown.dart';
+import 'package:estimator/common/widgets/searchable_list_view.dart';
 import 'package:estimator/common_libs.dart';
 import 'package:estimator/database/repository.dart';
 import 'package:estimator/model/item_model.dart';
-import 'package:estimator/presentation/item/cubit/edit_item_cubit.dart';
 
-// ─────────────────────────────────────────────────────────────────────────────
-// Page entry point – provides the cubit
-// ─────────────────────────────────────────────────────────────────────────────
+import 'cubit/edit_item_cubit.dart';
 
 class EditItemPage extends StatelessWidget {
   const EditItemPage({super.key, this.initialItem});
 
-  /// Pass an existing item to open in edit mode; leave null for new-item mode.
   final EstimatorItem? initialItem;
 
   @override
@@ -22,10 +20,6 @@ class EditItemPage extends StatelessWidget {
     );
   }
 }
-
-// ─────────────────────────────────────────────────────────────────────────────
-// Main view – listens to status changes for snackbars / navigation
-// ─────────────────────────────────────────────────────────────────────────────
 
 class _EditItemView extends StatelessWidget {
   const _EditItemView();
@@ -56,28 +50,6 @@ class _EditItemView extends StatelessWidget {
             selector: (state) => state.isNew,
             builder: (_, isNew) => Text(isNew ? 'New Item' : 'Edit Item'),
           ),
-          // actions: [
-          //   BlocSelector<EditItemCubit, EditItemState, bool>(
-          //     selector: (state) => state.isSaving,
-          //     builder: (context, isSaving) {
-          //       return isSaving
-          //           ? const Padding(
-          //               padding: EdgeInsets.symmetric(horizontal: 16.0),
-          //               child: Center(
-          //                 child: SizedBox(
-          //                   width: 20,
-          //                   height: 20,
-          //                   child: CircularProgressIndicator(strokeWidth: 2),
-          //                 ),
-          //               ),
-          //             )
-          //           : TextButton(
-          //               onPressed: () => context.read<EditItemCubit>().save(),
-          //               child: const Text('Save'),
-          //             );
-          //     },
-          //   ),
-          // ],
         ),
         body: const SafeArea(child: _EditItemForm()),
       ),
@@ -122,6 +94,20 @@ class _EditItemFormState extends State<_EditItemForm> {
       padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 24.0),
       children: <Widget>[
         // ~ Name field with autocomplete suggestions
+        SizedBox(
+          height: 300.0,
+          child: SearchableListView<String>(
+            optionsBuilder: (textEditingValue) {
+              return ['Satya', 'Subho', 'Jyoti', 'Biswas', 'Jhuma', 'Mantu'];
+            },
+            optionViewBuilder: (context, option, isHighlighted, onSelected) {
+              return ListTile(title: Text(option));
+            },
+          ),
+        ),
+
+        const Gap(20),
+
         _NameFieldWithSuggestions(
           controller: _nameController,
           focusNode: _nameFocusNode,
