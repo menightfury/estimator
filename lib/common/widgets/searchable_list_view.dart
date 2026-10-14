@@ -239,18 +239,20 @@ class _SearchableListViewState<T extends Object> extends State<SearchableListVie
               // detour into focusable items in the options overlay
               // instead of advancing to the next form field.
               child: ExcludeFocus(
-                child: ValueListenableBuilder<int>(
-                  valueListenable: _highlightedOptionIndexNotifier,
-                  builder: (context, highlightedIndex, _) {
-                    return ListView.builder(
-                      itemBuilder: (context, index) {
-                        final option = _options.elementAt(index);
-                        final isHighlighted = highlightedIndex == index;
-                        return widget.optionViewBuilder(context, option, isHighlighted, _select);
-                      },
-                      itemCount: _options.length,
-                    );
-                  },
+                child: Material(
+                  child: ValueListenableBuilder<int>(
+                    valueListenable: _highlightedOptionIndexNotifier,
+                    builder: (context, highlightedIndex, _) {
+                      return ListView.builder(
+                        itemBuilder: (context, index) {
+                          final option = _options.elementAt(index);
+                          final isHighlighted = highlightedIndex == index;
+                          return widget.optionViewBuilder(context, option, isHighlighted, _select);
+                        },
+                        itemCount: _options.length,
+                      );
+                    },
+                  ),
                 ),
               ),
             ),

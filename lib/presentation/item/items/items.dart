@@ -1,5 +1,4 @@
 import 'package:estimator/common_libs.dart';
-import 'package:estimator/database/repository.dart';
 import 'package:estimator/model/item_model.dart';
 import 'package:estimator/presentation/item/edit_item/edit_item.dart';
 
@@ -10,10 +9,7 @@ class ItemsPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (_) => ItemsCubit(repository: EstimatorRepository.instance)..loadItems(),
-      child: const _ItemsView(),
-    );
+    return const _ItemsView();
   }
 }
 

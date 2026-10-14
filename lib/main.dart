@@ -8,6 +8,7 @@ import 'common_libs.dart';
 import 'database/api.dart';
 import 'database/repository.dart';
 import 'presentation/intro/splash_page.dart';
+import 'presentation/item/items/cubit/items_cubit.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -22,42 +23,6 @@ void main() async {
   await Bootstrap.initialize();
 
   runApp(const EstimatorApp());
-}
-
-class EstimatorApp extends StatelessWidget {
-  const EstimatorApp({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    // final api = Bootstrap.instance.api;
-    // initialize all repositories here
-    // final accountRepository = AccountRepository.initialize(api);
-    // AmcRepository.initialize(api);
-    // TransactionRepository.initialize(api);
-
-    return MultiBlocProvider(
-      providers: [BlocProvider<AppCubit>(create: (_) => AppCubit())],
-      child: const _AppView(),
-    );
-  }
-}
-
-class _AppView extends StatelessWidget {
-  const _AppView({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    $logger.e('Material app rebuilds 😟.');
-
-    return MaterialApp(
-      title: 'Estimator',
-      debugShowCheckedModeBanner: false,
-      theme: AppStyle.instance.getTheme(AppStyle.lightColorScheme),
-      // darkTheme: AppStyle.instance.getTheme(darkScheme),
-      // themeMode: state.isDarkMode ? ThemeMode.dark : ThemeMode.light,
-      home: const SplashPage(),
-    );
-  }
 }
 
 class Bootstrap {
@@ -83,7 +48,7 @@ class Bootstrap {
     // declare directory where both the databases will be stored
     // final directory = await getApplicationDocumentsDirectory();
     final directory = await getApplicationSupportDirectory();
-    $logger.i(directory);
+    // debugPrint(directory.toString());
     // Initialize hydrated storage (i.e. hive database) in that declared directory.
     // However, no need to specify hive db name separately, because `HydratedStorage` already
     // specified the name as `hydrated_box`
@@ -95,5 +60,40 @@ class Bootstrap {
     final api = EstimatorApi(directory);
     EstimatorRepository.initialize(api);
     return _instance = Bootstrap._(api);
+  }
+}
+
+class EstimatorApp extends StatelessWidget {
+  const EstimatorApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final repository = EstimatorRepository.instance;
+
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider<AppCubit>(create: (_) => AppCubit()),
+        BlocProvider<ItemsCubit>(create: (_) => ItemsCubit(repository: repository)..fetchItems()),
+      ],
+      child: const _AppView(),
+    );
+  }
+}
+
+class _AppView extends StatelessWidget {
+  const _AppView({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    $logger.e('Material app rebuilds 😟.');
+
+    return MaterialApp(
+      title: 'Estimator',
+      debugShowCheckedModeBanner: false,
+      theme: AppStyle.instance.getTheme(AppStyle.lightColorScheme),
+      // darkTheme: AppStyle.instance.getTheme(darkScheme),
+      // themeMode: state.isDarkMode ? ThemeMode.dark : ThemeMode.light,
+      home: const SplashPage(),
+    );
   }
 }

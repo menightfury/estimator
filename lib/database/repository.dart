@@ -32,8 +32,9 @@ class EstimatorRepository {
     return results.map((map) => EstimatorItem.fromDb(table.fromMap(map))).toList();
   }
 
-  Stream<List<EstimatorItem>> fetchItems() {
-    return _api.onTableChange.where((event) => event.table == _api.itemTable).asyncMap((_) => getItems());
+  Stream<List<EstimatorItem>> fetchItems() async* {
+    yield await getItems();
+    yield* _api.onTableChange.where((event) => event.table == _api.itemTable).asyncMap((_) => getItems());
   }
 
   Future<List<EstimatorItem>> searchItems(String query) async {
