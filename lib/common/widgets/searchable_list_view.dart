@@ -39,15 +39,6 @@ class SearchableListView<T extends Object> extends StatefulWidget {
   final AutocompleteOnSelected<T>? onSelected;
   final AutocompleteOptionsBuilder<T> optionsBuilder;
 
-  static void onFieldSubmitted<T extends Object>(GlobalKey key) {
-    final rawAutocomplete = key.currentState! as _SearchableListViewState<T>;
-    rawAutocomplete._onFieldSubmitted();
-  }
-
-  static String defaultStringForOption(Object? option) {
-    return option.toString();
-  }
-
   @override
   State<SearchableListView<T>> createState() => _SearchableListViewState<T>();
 }
@@ -65,7 +56,8 @@ class _SearchableListViewState<T extends Object> extends State<SearchableListVie
 
   FocusNode? _internalFocusNode;
   FocusNode get _focusNode {
-    return widget.focusNode ?? (_internalFocusNode ??= FocusNode()..addListener(_onFocusChange));
+    // return widget.focusNode ?? (_internalFocusNode ??= FocusNode()..addListener(_onFocusChange));
+    return widget.focusNode ?? (_internalFocusNode ??= FocusNode());
   }
 
   Iterable<T> _options = Iterable<T>.empty();
@@ -75,11 +67,11 @@ class _SearchableListViewState<T extends Object> extends State<SearchableListVie
   String? _lastFieldText;
   final ValueNotifier<int> _highlightedOptionIndexNotifier = ValueNotifier<int>(0);
 
-  void _onFocusChange() {
-    if (_focusNode.hasFocus != _hasFocus) {
-      _hasFocus = _focusNode.hasFocus;
-    }
-  }
+  // void _onFocusChange() {
+  //   if (_focusNode.hasFocus != _hasFocus) {
+  //     _hasFocus = _focusNode.hasFocus;
+  //   }
+  // }
 
   // Assigning an ID to every call of _onChangedField is necessary to avoid a
   // situation where _options is updated by an older call when multiple
@@ -112,12 +104,11 @@ class _SearchableListViewState<T extends Object> extends State<SearchableListVie
       return;
     }
     $logger.i(options);
-    _options = options;
-    _updateHighlight(0);
-    final T? selection = _selection;
-    if (selection != null) {
+    setState(() {
+      _options = options;
+      _updateHighlight(0);
       _selection = null;
-    }
+    });
   }
 
   // Called from fieldViewBuilder when the user submits the field.
@@ -176,7 +167,7 @@ class _SearchableListViewState<T extends Object> extends State<SearchableListVie
         (_internalTextEditingController = TextEditingController.fromValue(widget.initialValue));
     initialController.addListener(_onChangedField);
     _hasFocus = _focusNode.hasFocus;
-    widget.focusNode?.addListener(_onFocusChange);
+    // widget.focusNode?.addListener(_onFocusChange);
   }
 
   @override
