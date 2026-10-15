@@ -25,8 +25,7 @@ class SearchableListView<T extends Object> extends StatefulWidget {
     this.onSelected,
     this.textEditingController,
     this.initialValue,
-  }) : assert((focusNode == null) == (textEditingController == null)),
-       assert(
+  }) : assert(
          !(textEditingController != null && initialValue != null),
          'textEditingController and initialValue cannot be simultaneously defined.',
        );
@@ -80,7 +79,6 @@ class _SearchableListViewState<T extends Object> extends State<SearchableListVie
 
   // Called when _textEditingController changes.
   Future<void> _onChangedField() async {
-    $logger.i(_textEditingController.value);
     // During a selection, changes to the field text should not trigger options update.
     if (_selecting) {
       return;

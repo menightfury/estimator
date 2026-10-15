@@ -50,6 +50,7 @@ class _ItemSearchState extends State<_ItemSearch> {
   @override
   Widget build(BuildContext context) {
     return SearchableListView<EstimatorItem>(
+      focusNode: _focusNode,
       optionViewBuilder: (context, option, isHighlighted, onSelected) {
         return ListTile(
           title: Text(option.name),
