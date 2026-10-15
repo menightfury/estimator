@@ -55,70 +55,14 @@ class EstimatorApi {
             batch.execute(table.createTableSql);
           }
 
-          // create triggers for automatic stats updates (dynamically generated)
-          // batch.execute(
-          //   _rateTable.createTrigger(
-          //     eventType: TableEventType.insert,
-          //     operation: _buildTriggerOperation(TableEventType.insert),
-          //   ),
-          // );
-          // batch.execute(
-          //   _rateTable.createTrigger(
-          //     eventType: TableEventType.update,
-          //     operation: _buildTriggerOperation(TableEventType.update),
-          //   ),
-          // );
-          // batch.execute(
-          //   _rateTable.createTrigger(
-          //     eventType: TableEventType.delete,
-          //     operation: _buildTriggerOperation(TableEventType.delete),
-          //   ),
-          // );
-
           await batch.commit(noResult: true, continueOnError: true);
         },
-        // onUpgrade: (db, oldVersion, newVersion) async {
-        //   $logger.w('===== upgrading database ======');
-        //   if (oldVersion < 7) {
-        //     await _migrateAccountsToNewModel(db);
-        //   }
-        // },
       ),
     );
-    // if (_db != null) {
-    //   final version = await _db!.rawQuery('PRAGMA user_version');
-    //   $logger.w(version);
-    // }
 
     // ?? Close database at the end ??
     _tables.addAll(tables);
   }
-
-  // Future<void> _migrateAccountsToNewModel(Database db) async {
-  //   final accountTable = _itemTable;
-  //   final columns = await db.rawQuery('PRAGMA table_info(${accountTable.title})');
-  //   final existingColumns = columns.map((column) => column['name'] as String).toSet();
-  //   final newColumns = _itemTable.columns.map((column) => column.title).toSet();
-  //   final commonColumns = existingColumns.intersection(newColumns);
-
-  //   if (commonColumns.isEmpty) {
-  //     await db.execute(accountTable.createTableSql);
-  //     return;
-  //   }
-
-  //   final batch = db.batch();
-  //   batch.execute('PRAGMA foreign_keys = OFF');
-  //   batch.execute('ALTER TABLE ${accountTable.title} RENAME TO sqliteinvesly_temp_table');
-  //   batch.execute(accountTable.createTableSql);
-
-  //   final columnList = commonColumns.join(', ');
-  //   batch.execute('INSERT INTO ${accountTable.title} ($columnList) SELECT $columnList FROM sqliteinvesly_temp_table');
-
-  //   batch.execute('DROP TABLE sqliteinvesly_temp_table');
-  //   batch.execute('PRAGMA foreign_keys = ON');
-
-  //   await batch.commit(noResult: true, continueOnError: true);
-  // }
 
   // helper function to get a table out of initialized tables
   T? getTable<T extends TableSchema>() => _tables.firstWhereOrNull((table) => table is T) as T?;
