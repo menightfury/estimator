@@ -7,7 +7,7 @@ import 'package:estimator/model/item_model.dart';
 part 'items_state.dart';
 
 class ItemsCubit extends Cubit<ItemsState> {
-  ItemsCubit({required this.repository}) : super(ItemsInitial());
+  ItemsCubit({required this.repository}) : super(ItemsInitialState());
 
   final EstimatorRepository repository;
   int _loadRequestId = 0;
@@ -16,31 +16,31 @@ class ItemsCubit extends Cubit<ItemsState> {
 
   Future<void> loadItems() async {
     final requestId = ++_loadRequestId;
-    emit(ItemsLoading());
+    emit(ItemsLoadingState());
 
     try {
       final items = await repository.getItems();
       if (isClosed || requestId != _loadRequestId) return;
-      emit(ItemsLoaded(items));
+      emit(ItemsLoadedState(items));
     } on Exception catch (error, stackTrace) {
       $logger.e('Failed to load items', error: error, stackTrace: stackTrace);
       if (isClosed || requestId != _loadRequestId) return;
-      emit(const ItemsLoadFailure());
+      emit(ItemsErrorState(error.toString()));
     }
   }
 
   // Listen to changes in the items table and reload items when a change occurs
   Future<void> fetchItems() async {
-    emit(ItemsLoading());
+    emit(ItemsLoadingState());
     _subscription ??= repository.fetchItems().listen(
       (items) {
         if (isClosed) return;
-        emit(ItemsLoaded(items));
+        emit(ItemsLoadedState(items));
       },
       onError: (error, stackTrace) {
         $logger.e('Failed to fetch items', error: error, stackTrace: stackTrace);
         if (isClosed) return;
-        emit(const ItemsLoadFailure());
+        emit(ItemsErrorState(error.toString()));
       },
       onDone: () {
         _subscription?.cancel();

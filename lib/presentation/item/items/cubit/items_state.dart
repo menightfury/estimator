@@ -7,19 +7,24 @@ sealed class ItemsState extends Equatable {
   List<Object?> get props => [];
 }
 
-final class ItemsInitial extends ItemsState {}
+final class ItemsInitialState extends ItemsState {}
 
-final class ItemsLoading extends ItemsState {}
+final class ItemsLoadingState extends ItemsState {}
 
-final class ItemsLoaded extends ItemsState {
-  const ItemsLoaded(this.items);
+final class ItemsLoadedState extends ItemsState {
+  const ItemsLoadedState(this.items);
 
   final List<EstimatorItem> items;
 
   @override
-  List<Object?> get props => [items];
+  List<Object> get props => [items];
 }
 
-final class ItemsLoadFailure extends ItemsState {
-  const ItemsLoadFailure();
+final class ItemsErrorState extends ItemsState {
+  const ItemsErrorState(this.msg);
+
+  final String msg;
+
+  @override
+  List<Object> get props => [msg];
 }

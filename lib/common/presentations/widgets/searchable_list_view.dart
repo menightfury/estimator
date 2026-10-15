@@ -3,18 +3,17 @@ import 'dart:async';
 import 'package:estimator/common_libs.dart';
 
 import 'divider.dart';
+import 'empty_widget.dart';
 
-typedef AutocompleteOptionsBuilder<T extends Object> = FutureOr<Iterable<T>> Function(
-  TextEditingValue textEditingValue,
-);
+typedef SearchableListViewOptionsBuilder<T extends Object> = FutureOr<Iterable<T>> Function(String text);
 
-typedef AutocompleteOnSelected<T extends Object> = void Function(T option);
+typedef SearchableListViewOnSelected<T extends Object> = void Function(T option);
 
-typedef AutocompleteOptionViewBuilder<T extends Object> = Widget Function(
+typedef SearchableListViewOptionViewBuilder<T extends Object> = Widget Function(
   BuildContext context,
   T option,
   bool isHighlighted,
-  AutocompleteOnSelected<T> onSelected,
+  SearchableListViewOnSelected<T> onSelected,
 );
 
 class SearchableListView<T extends Object> extends StatefulWidget {
@@ -34,10 +33,10 @@ class SearchableListView<T extends Object> extends StatefulWidget {
 
   final FocusNode? focusNode;
   final TextEditingController? textEditingController;
-  final TextEditingValue? initialValue;
-  final AutocompleteOptionViewBuilder<T> optionViewBuilder;
-  final AutocompleteOnSelected<T>? onSelected;
-  final AutocompleteOptionsBuilder<T> optionsBuilder;
+  final String? initialValue;
+  final SearchableListViewOptionViewBuilder<T> optionViewBuilder;
+  final SearchableListViewOnSelected<T>? onSelected;
+  final SearchableListViewOptionsBuilder<T> optionsBuilder;
 
   @override
   State<SearchableListView<T>> createState() => _SearchableListViewState<T>();
@@ -83,15 +82,15 @@ class _SearchableListViewState<T extends Object> extends State<SearchableListVie
     if (_selecting) {
       return;
     }
-    final TextEditingValue value = _textEditingController.value;
+    final value = _textEditingController.text;
 
     // Makes sure that options change only when content of the field changes.
     var shouldUpdateOptions = false;
-    if (value.text != _lastFieldText) {
+    if (value != _lastFieldText) {
       shouldUpdateOptions = true;
       _onChangedCallId += 1;
     }
-    _lastFieldText = value.text;
+    _lastFieldText = value;
 
     final int callId = _onChangedCallId;
     final Iterable<T> options = await widget.optionsBuilder(value);
@@ -164,7 +163,7 @@ class _SearchableListViewState<T extends Object> extends State<SearchableListVie
     super.initState();
     final TextEditingController initialController =
         widget.textEditingController ??
-        (_internalTextEditingController = TextEditingController.fromValue(widget.initialValue));
+        (_internalTextEditingController = TextEditingController(text: widget.initialValue));
     initialController.addListener(_onChangedField);
     _hasFocus = _focusNode.hasFocus;
     // widget.focusNode?.addListener(_onFocusChange);
@@ -230,35 +229,95 @@ class _SearchableListViewState<T extends Object> extends State<SearchableListVie
 
           // ~ Results
           Expanded(
-            child: TextFieldTapRegion(
-              // Exclude the options overlay from the ambient focus
-              // traversal tree. Autocomplete options are navigated by
-              // arrow keys (via the widget's own shortcuts) and selected
-              // via Enter or tap, so they don't participate in TAB
-              // traversal. Without this, TAB from the field would
-              // detour into focusable items in the options overlay
-              // instead of advancing to the next form field.
-              child: ExcludeFocus(
-                child: Material(
-                  child: ValueListenableBuilder<int>(
-                    valueListenable: _highlightedOptionIndexNotifier,
-                    builder: (context, highlightedIndex, _) {
-                      return ListView.builder(
-                        itemBuilder: (context, index) {
-                          final option = _options.elementAt(index);
-                          final isHighlighted = highlightedIndex == index;
-                          return widget.optionViewBuilder(context, option, isHighlighted, _select);
-                        },
-                        itemCount: _options.length,
-                      );
-                    },
-                  ),
-                ),
-              ),
-            ),
+            child: _options.isNotEmpty
+                ? TextFieldTapRegion(
+                    // Exclude the options overlay from the ambient focus
+                    // traversal tree. Autocomplete options are navigated by
+                    // arrow keys (via the widget's own shortcuts) and selected
+                    // via Enter or tap, so they don't participate in TAB
+                    // traversal. Without this, TAB from the field would
+                    // detour into focusable items in the options overlay
+                    // instead of advancing to the next form field.
+                    child: ExcludeFocus(
+                      child: Material(
+                        child: ValueListenableBuilder<int>(
+                          valueListenable: _highlightedOptionIndexNotifier,
+                          builder: (context, highlightedIndex, _) {
+                            return ListView.builder(
+                              itemBuilder: (context, index) {
+                                final option = _options.elementAt(index);
+                                final isHighlighted = highlightedIndex == index;
+                                return widget.optionViewBuilder(context, option, isHighlighted, _select);
+                              },
+                              itemCount: _options.length,
+                            );
+                          },
+                        ),
+                      ),
+                    ),
+                  )
+                : EmptyWidget(),
           ),
         ],
       ),
     );
   }
 }
+
+// enum ItemSearchStateStatus { initial, empty, loading, success, error }
+
+// class ItemSearchNotifier extends ChangeNotifier {
+//   ItemSearchNotifier()
+//     : _itemCache = {},
+//       _debouncer = Debouncer(2.seconds),
+//       _status = ItemSearchStateStatus.initial,
+//       _results = const [];
+
+//   final Map<String, List<EstimatorItem>> _itemCache;
+//   final Debouncer _debouncer;
+
+//   ItemSearchStateStatus _status;
+//   ItemSearchStateStatus get status => _status;
+
+//   List<EstimatorItem> _results;
+//   List<EstimatorItem> get results => _results;
+
+//   Future<void> search(String query) async {
+//     final q = query.trim();
+//     if (q.isEmpty) {
+//       _status = ItemSearchStateStatus.empty;
+//       _results = const [];
+//       notifyListeners();
+//       return;
+//     }
+
+//     final key = q.toLowerCase();
+//     final cachedResult = _itemCache[key];
+//     if (cachedResult != null) {
+//       _status = ItemSearchStateStatus.success;
+//       _results = cachedResult;
+//       notifyListeners();
+//       return;
+//     }
+
+//     _status = ItemSearchStateStatus.loading;
+//     _results = const [];
+//     notifyListeners();
+
+//     try {
+//       await _debouncer.wait();
+//       final results = await EstimatorRepository.instance.searchItems(query);
+//       $logger.d(results);
+//       _status = ItemSearchStateStatus.success;
+//       _results = results;
+//       _itemCache[key] = results;
+//     } on Exception catch (_) {
+//       _status = ItemSearchStateStatus.error;
+//       _results = const [];
+//     }
+//     notifyListeners();
+//   }
+
+//   @override
+//   String toString() => 'status: $_status, results: $_results';
+// }

@@ -1,4 +1,4 @@
-import 'package:estimator/common/widgets/divider.dart';
+import 'package:estimator/common/presentations/widgets/divider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 

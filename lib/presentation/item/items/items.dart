@@ -30,8 +30,8 @@ class _ItemsView extends StatelessWidget {
       body: BlocBuilder<ItemsCubit, ItemsState>(
         builder: (context, state) {
           return switch (state) {
-            ItemsInitial() || ItemsLoading() => const Center(child: CircularProgressIndicator()),
-            ItemsLoadFailure() => Center(
+            ItemsInitialState() || ItemsLoadingState() => const Center(child: CircularProgressIndicator()),
+            ItemsErrorState() => Center(
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
@@ -41,8 +41,8 @@ class _ItemsView extends StatelessWidget {
                 ],
               ),
             ),
-            ItemsLoaded(:final items) when items.isEmpty => const Center(child: Text('No items found.')),
-            ItemsLoaded(:final items) => ListView.separated(
+            ItemsLoadedState(:final items) when items.isEmpty => const Center(child: Text('No items found.')),
+            ItemsLoadedState(:final items) => ListView.separated(
               itemCount: items.length,
               separatorBuilder: (_, _) => const Divider(height: 1),
               itemBuilder: (context, index) {
