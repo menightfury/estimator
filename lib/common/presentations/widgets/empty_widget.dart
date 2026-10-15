@@ -11,7 +11,7 @@ class EmptyWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final color = this.color ?? theme.primaryColor;
+    final color = this.color ?? theme.disabledColor;
 
     return Center(
       child: Padding(

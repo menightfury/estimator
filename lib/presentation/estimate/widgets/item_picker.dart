@@ -16,34 +16,70 @@ class _ItemPicker extends StatelessWidget {
     }
 
     if (itemsState is ItemsLoadedState) {
-      return SearchableListView<EstimatorItem>(
-        optionViewBuilder: (context, option, isHighlighted, onSelected) {
-          return ListTile(
-            title: Text(option.name),
-            subtitle: Text(
-              option.description,
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
-              style: context.textTheme.bodySmall,
-            ),
-            trailing: _TypeBadge(type: option.type ?? EstimatorItemType.both),
-            onTap: () => onItemSelected?.call(option),
-            selected: isHighlighted,
-            hoverColor: Colors.amber,
-          );
-        },
-        optionsBuilder: (text) {
-          final items = itemsState.items;
-          final searchText = text.trim();
-          if (searchText.isEmpty) {
-            return items;
-          }
-          return items.where((item) => item.name.contains(searchText));
-        },
-      );
+      return _ItemSearch(items: itemsState.items, onItemSelected: onItemSelected);
     }
 
     return const Center(child: CircularProgressIndicator());
+  }
+}
+
+class _ItemSearch extends StatefulWidget {
+  const _ItemSearch({super.key, this.items = const [], this.onItemSelected});
+
+  final ValueChanged<EstimatorItem>? onItemSelected;
+  final List<EstimatorItem> items;
+
+  @override
+  State<_ItemSearch> createState() => _ItemSearchState();
+}
+
+class _ItemSearchState extends State<_ItemSearch> {
+  late final FocusNode _focusNode;
+
+  @override
+  void initState() {
+    super.initState();
+    _focusNode = FocusNode();
+
+    // Request focus after the first frame is rendered
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _focusNode.requestFocus();
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return SearchableListView<EstimatorItem>(
+      optionViewBuilder: (context, option, isHighlighted, onSelected) {
+        return ListTile(
+          title: Text(option.name),
+          subtitle: Text(
+            option.description,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+            style: context.textTheme.bodySmall,
+          ),
+          trailing: _TypeBadge(type: option.type ?? EstimatorItemType.both),
+          onTap: () => widget.onItemSelected?.call(option),
+          selected: isHighlighted,
+          hoverColor: Colors.amber,
+        );
+      },
+      optionsBuilder: (text) {
+        final items = widget.items;
+        final searchText = text.trim();
+        if (searchText.isEmpty) {
+          return items;
+        }
+        return items.where((item) => item.name.contains(searchText));
+      },
+    );
+  }
+
+  @override
+  void dispose() {
+    _focusNode.dispose();
+    super.dispose();
   }
 }
 
