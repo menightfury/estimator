@@ -18,9 +18,9 @@ class _ItemsView extends StatelessWidget {
 
   Future<void> _openItem(BuildContext context, [EstimatorItem? item]) async {
     await context.push<Object>(EditItemPage(initialItem: item));
-    if (context.mounted) {
-      await context.read<ItemsCubit>().loadItems();
-    }
+    // if (context.mounted) {
+    //   await context.read<ItemsCubit>().loadItems();
+    // }
   }
 
   @override
@@ -37,7 +37,7 @@ class _ItemsView extends StatelessWidget {
                 children: [
                   const Text('Could not load items. Please try again.'),
                   const Gap(12),
-                  OutlinedButton(onPressed: () => context.read<ItemsCubit>().loadItems(), child: const Text('Retry')),
+                  // OutlinedButton(onPressed: () => context.read<ItemsCubit>().loadItems(), child: const Text('Retry')),
                 ],
               ),
             ),

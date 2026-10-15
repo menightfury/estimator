@@ -10,24 +10,24 @@ class ItemsCubit extends Cubit<ItemsState> {
   ItemsCubit({required this.repository}) : super(ItemsInitialState());
 
   final EstimatorRepository repository;
-  int _loadRequestId = 0;
+  // int _loadRequestId = 0;
 
   StreamSubscription<List<EstimatorItem>>? _subscription;
 
-  Future<void> loadItems() async {
-    final requestId = ++_loadRequestId;
-    emit(ItemsLoadingState());
+  // Future<void> loadItems() async {
+  //   final requestId = ++_loadRequestId;
+  //   emit(ItemsLoadingState());
 
-    try {
-      final items = await repository.getItems();
-      if (isClosed || requestId != _loadRequestId) return;
-      emit(ItemsLoadedState(items));
-    } on Exception catch (error, stackTrace) {
-      $logger.e('Failed to load items', error: error, stackTrace: stackTrace);
-      if (isClosed || requestId != _loadRequestId) return;
-      emit(ItemsErrorState(error.toString()));
-    }
-  }
+  //   try {
+  //     final items = await repository.getItems();
+  //     if (isClosed || requestId != _loadRequestId) return;
+  //     emit(ItemsLoadedState(items));
+  //   } on Exception catch (error, stackTrace) {
+  //     $logger.e('Failed to load items', error: error, stackTrace: stackTrace);
+  //     if (isClosed || requestId != _loadRequestId) return;
+  //     emit(ItemsErrorState(error.toString()));
+  //   }
+  // }
 
   // Listen to changes in the items table and reload items when a change occurs
   Future<void> fetchItems() async {

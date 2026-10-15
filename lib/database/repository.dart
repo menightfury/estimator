@@ -24,9 +24,14 @@ class EstimatorRepository {
 
   final EstimatorApi _api;
 
+  Stream<TableEvent> get onDataChanged => _api.onTableChange;
+
   // ~ Items related
   Future<List<EstimatorItem>> getItems() async {
     final table = _api.itemTable;
+    if (table == null) {
+      throw Exception('Unable to find items table in Database!');
+    }
     final results = await _api.select(table, orderBy: {table.nameColumn: false});
 
     return results.map((map) => EstimatorItem.fromDb(table.fromMap(map))).toList();
@@ -38,10 +43,13 @@ class EstimatorRepository {
   }
 
   Future<List<EstimatorItem>> searchItems(String query) async {
+    final table = _api.itemTable;
+    if (table == null) {
+      throw Exception('Unable to find items table in Database!');
+    }
     final searchTerm = query.trim();
     if (searchTerm.isEmpty) return const [];
 
-    final table = _api.itemTable;
     final results = await _api.select(
       table,
       filter: SingleValueTableFilter<String>(table.nameColumn, searchTerm, operator: FilterOperator.like),
@@ -52,15 +60,22 @@ class EstimatorRepository {
   }
 
   Future<void> saveItem(ItemInDb item, {required bool isNew}) async {
+    final table = _api.itemTable;
+    if (table == null) {
+      throw Exception('Unable to find items table in Database!');
+    }
     if (isNew) {
-      await _api.insert(_api.itemTable, item);
+      await _api.insert(table, item);
     } else {
-      await _api.update(_api.itemTable, item);
+      await _api.update(table, item);
     }
   }
 
   Future<EstimatorItem?> getItem(String id) async {
     final table = _api.itemTable;
+    if (table == null) {
+      throw Exception('Unable to find items table in Database!');
+    }
     final results = await _api.select(table, filter: SingleValueTableFilter<String>(table.idColumn, id));
 
     if (results.isEmpty) return null;
@@ -70,10 +85,13 @@ class EstimatorRepository {
 
   // ~ LOA related
   Future<List<EstimatorLoa>> searchLoas(String query) async {
+    final table = _api.loaTable;
+    if (table == null) {
+      throw Exception('Unable to find loas table in Database!');
+    }
     final searchTerm = query.trim();
     if (searchTerm.isEmpty) return const [];
 
-    final table = _api.loaTable;
     final results = await _api.select(
       table,
       filter: SingleValueTableFilter<String>(table.numberColumn, searchTerm, operator: FilterOperator.like),
@@ -85,6 +103,9 @@ class EstimatorRepository {
 
   Future<EstimatorLoa?> getLoa(String id) async {
     final table = _api.loaTable;
+    if (table == null) {
+      throw Exception('Unable to find loas table in Database!');
+    }
     final results = await _api.select(table, filter: SingleValueTableFilter<String>(table.idColumn, id));
 
     if (results.isEmpty) return null;
@@ -97,6 +118,9 @@ class EstimatorRepository {
     final rateTable = _api.rateTable;
     final itemTable = _api.itemTable;
     final loaTable = _api.loaTable;
+    if (rateTable == null || itemTable == null || loaTable == null) {
+      throw Exception('Unable to find items, rates and loas table in Database!');
+    }
 
     late final List<EstimatorRate> rates;
     try {
@@ -128,6 +152,9 @@ class EstimatorRepository {
     final rateTable = _api.rateTable;
     final itemTable = _api.itemTable;
     final loaTable = _api.loaTable;
+    if (rateTable == null || itemTable == null || loaTable == null) {
+      throw Exception('Unable to find items, rates and loas table in Database!');
+    }
 
     late final List<EstimatorRate> rates;
     try {
@@ -154,8 +181,6 @@ class EstimatorRepository {
 
     return rates;
   }
-
-  Stream<TableEvent> get onDataChanged => _api.onTableChange;
 
   // /// Get transactions
   // Future<List<InveslyTransaction>> getTransactions({

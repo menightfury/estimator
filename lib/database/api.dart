@@ -16,13 +16,13 @@ class EstimatorApi {
 
   EstimatorApi(this.databaseDirectory) : _tableEventController = StreamController<TableEvent>.broadcast();
 
+  static const _dbName = 'estimator_master.db';
+
   Database? _db;
   Database get db {
     assert(_db != null, 'Please make sure to initialize before getting database');
     return _db!;
   }
-
-  static const _dbName = 'estimator_master.db';
 
   final List<TableSchema> _tables = [];
 
@@ -31,18 +31,8 @@ class EstimatorApi {
 
   String get dbPath => p.join(databaseDirectory.path, _dbName);
 
-  // define all necessary tables
-  final _itemTable = ItemTable();
-  final _loaTable = LoaTable();
-  final _rateTable = RateTable();
-
-  // Table getters
-  ItemTable get itemTable => _itemTable;
-  LoaTable get loaTable => _loaTable;
-  RateTable get rateTable => _rateTable;
-
   Future<void> initializeDatabase() async {
-    final tables = <TableSchema>[_itemTable, _loaTable, _rateTable];
+    final tables = <TableSchema>[ItemTable(), LoaTable(), RateTable()];
     _db = await databaseFactoryFfi.openDatabase(
       dbPath,
       options: OpenDatabaseOptions(
@@ -65,7 +55,14 @@ class EstimatorApi {
   }
 
   // helper function to get a table out of initialized tables
-  T? getTable<T extends TableSchema>() => _tables.firstWhereOrNull((table) => table is T) as T?;
+  T? getTable<T extends TableSchema>() {
+    return _tables.firstWhereOrNull((table) => table is T) as T?;
+  }
+
+  // Table getters
+  ItemTable? get itemTable => getTable<ItemTable>();
+  LoaTable? get loaTable => getTable<LoaTable>();
+  RateTable? get rateTable => getTable<RateTable>();
 
   Future<List<Map<String, dynamic>>> select(
     TableSchema table, {
