@@ -166,6 +166,7 @@ class _SearchableListViewState<T extends Object> extends State<SearchableListVie
 
     _optionsNotifier = ValueNotifier<Iterable<T>>(Iterable<T>.empty());
     _highlightedOptionIndexNotifier = ValueNotifier<int>(0);
+    _onChangedField();
   }
 
   @override
@@ -230,24 +231,24 @@ class _SearchableListViewState<T extends Object> extends State<SearchableListVie
 
           // ~ Results
           Expanded(
-            child: ValueListenableBuilder(
-              valueListenable: _optionsNotifier,
-              builder: (context, options, emptyWidget) {
-                if (options.isEmpty) {
-                  return emptyWidget!;
-                }
+            child: TextFieldTapRegion(
+              // Exclude the options overlay from the ambient focus
+              // traversal tree. Autocomplete options are navigated by
+              // arrow keys (via the widget's own shortcuts) and selected
+              // via Enter or tap, so they don't participate in TAB
+              // traversal. Without this, TAB from the field would
+              // detour into focusable items in the options overlay
+              // instead of advancing to the next form field.
+              child: ExcludeFocus(
+                child: Material(
+                  child: ValueListenableBuilder<Iterable<T>>(
+                    valueListenable: _optionsNotifier,
+                    builder: (context, options, emptyWidget) {
+                      if (options.isEmpty) {
+                        return emptyWidget!;
+                      }
 
-                return TextFieldTapRegion(
-                  // Exclude the options overlay from the ambient focus
-                  // traversal tree. Autocomplete options are navigated by
-                  // arrow keys (via the widget's own shortcuts) and selected
-                  // via Enter or tap, so they don't participate in TAB
-                  // traversal. Without this, TAB from the field would
-                  // detour into focusable items in the options overlay
-                  // instead of advancing to the next form field.
-                  child: ExcludeFocus(
-                    child: Material(
-                      child: ValueListenableBuilder<int>(
+                      return ValueListenableBuilder<int>(
                         valueListenable: _highlightedOptionIndexNotifier,
                         builder: (context, highlightedIndex, _) {
                           return ListView.builder(
@@ -259,12 +260,12 @@ class _SearchableListViewState<T extends Object> extends State<SearchableListVie
                             itemCount: options.length,
                           );
                         },
-                      ),
-                    ),
+                      );
+                    },
+                    child: const EmptyWidget(label: Text('No results found !')),
                   ),
-                );
-              },
-              child: const EmptyWidget(label: Text('No results found !')),
+                ),
+              ),
             ),
           ),
         ],

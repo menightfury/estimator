@@ -37,8 +37,8 @@ class _CreateEstimatePageContentState extends State<_CreateEstimatePageContent> 
   double leftSidebarWidth = 260;
   double rightPanelWidth = 360;
 
-  static const _minLeftSidebarWidth = 180.0;
-  static const _maxLeftSidebarWidth = 420.0;
+  static const _minLeftSidebarWidth = 720.0;
+  static const _maxLeftSidebarWidth = 800.0;
   static const _minRightPanelWidth = 240.0;
   static const _maxRightPanelWidth = 560.0;
   static const _minMainAreaWidth = 320.0;

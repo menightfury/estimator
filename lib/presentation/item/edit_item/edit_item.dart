@@ -93,20 +93,6 @@ class _EditItemFormState extends State<_EditItemForm> {
       padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 24.0),
       children: <Widget>[
         // ~ Name field with autocomplete suggestions
-        SizedBox(
-          height: 300.0,
-          child: SearchableListView<String>(
-            optionsBuilder: (textEditingValue) {
-              return ['Satya', 'Subho', 'Jyoti', 'Biswas', 'Jhuma', 'Mantu'];
-            },
-            optionViewBuilder: (context, option, isHighlighted, onSelected) {
-              return ListTile(title: Text(option));
-            },
-          ),
-        ),
-
-        const Gap(20),
-
         _NameFieldWithSuggestions(
           controller: _nameController,
           focusNode: _nameFocusNode,
