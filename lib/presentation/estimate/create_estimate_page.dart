@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'dart:math' as math;
 
+import 'package:estimator/common/presentations/widgets/empty_widget.dart';
 import 'package:excel_plus/excel_plus.dart' hide Border;
 import 'package:path/path.dart' as p;
 
@@ -85,13 +86,7 @@ class _CreateEstimatePageContentState extends State<_CreateEstimatePageContent> 
                       },
                     ),
 
-                    Expanded(
-                      child: BlocBuilder<CreateEstimateCubit, CreateEstimateState>(
-                        builder: (context, state) {
-                          return _MainArea(selectedItem: state.selectedItem);
-                        },
-                      ),
-                    ),
+                    Expanded(child: _MainArea()),
 
                     _ResizeHandle(
                       onDrag: (delta) {
@@ -296,22 +291,31 @@ class _LeftSection extends StatelessWidget {
 
           // ~ Items List
           Expanded(
-            child: BlocBuilder<CreateEstimateCubit, CreateEstimateState>(
-              builder: (context, state) {
-                final items = state.items;
-                return ListView.separated(
-                  itemBuilder: (context, index) {
-                    final item = items[index];
-                    return _ItemTileView(
-                      item: item,
-                      isSelected: state.selectedItem == item,
-                      onTap: () => cubit.updateSelectedItem(item),
-                    );
-                  },
-                  itemCount: items.length,
-                  separatorBuilder: (context, index) => SizedBox(height: 8.0),
-                );
-              },
+            child: Material(
+              child: BlocBuilder<CreateEstimateCubit, CreateEstimateState>(
+                builder: (context, state) {
+                  final items = state.items;
+                  return ListView.separated(
+                    itemBuilder: (context, index) {
+                      final item = items[index];
+                      return ListTile(
+                        title: Text(item.item.name),
+                        subtitle: Text(
+                          item.description ?? item.item.description,
+                          overflow: TextOverflow.ellipsis,
+                          maxLines: 2,
+                        ),
+                        leading: const Icon(Icons.table_chart_outlined),
+                        trailing: const Icon(Icons.chevron_right_rounded),
+                        selected: state.selectedItem == item,
+                        onTap: () => cubit.selectItem(item),
+                      );
+                    },
+                    itemCount: items.length,
+                    separatorBuilder: (context, index) => SizedBox(height: 8.0),
+                  );
+                },
+              ),
             ),
           ),
 
@@ -338,85 +342,34 @@ class _LeftSection extends StatelessWidget {
   }
 }
 
-class _ItemTileView extends StatelessWidget {
-  final EstimateItem item;
-  final bool isSelected;
-  final VoidCallback? onTap;
-
-  const _ItemTileView({required this.item, required this.isSelected, this.onTap, super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Material(
-      color: isSelected ? const Color(0xFFF0E9D8) : Colors.transparent,
-      child: InkWell(
-        onTap: onTap,
-        hoverColor: const Color(0xFFF2ECDE),
-        child: SizedBox(
-          height: 42,
-          child: Row(
-            children: [
-              const SizedBox(width: 20),
-              const Icon(Icons.chevron_right_rounded, size: 15, color: AppColors.icon),
-              const SizedBox(width: 12),
-              const Icon(Icons.table_chart_outlined, size: 16, color: AppColors.icon),
-              const SizedBox(width: 10),
-              Text(item.item.name, style: const TextStyle(fontSize: 13, color: AppColors.text)),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
 class _MainArea extends StatelessWidget {
-  final EstimateItem? selectedItem;
-
-  const _MainArea({this.selectedItem});
+  const _MainArea({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      color: AppColors.mainSurface,
-      alignment: Alignment.center,
-      child: selectedItem == null
-          ? const Text('Select a table to view its data', style: TextStyle(fontSize: 14, color: Color(0xFF8998A1)))
-          : _TablePreview(tableName: selectedItem!.item.description),
-    );
-  }
-}
+    return Center(
+      child: SizedBox(
+        width: 700,
+        height: 250,
+        child: Card(
+          elevation: 0,
+          color: const Color(0xFFFCF8EB),
+          shape: RoundedRectangleBorder(
+            side: const BorderSide(color: AppColors.border),
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(20),
+            child: BlocSelector<CreateEstimateCubit, CreateEstimateState, EstimateItem?>(
+              selector: (state) => state.selectedItem,
+              builder: (context, item) {
+                if (item == null) {
+                  return const EmptyWidget(label: Text('Select a table to view its data'));
+                }
 
-class _TablePreview extends StatelessWidget {
-  final String tableName;
-
-  const _TablePreview({required this.tableName});
-
-  @override
-  Widget build(BuildContext context) {
-    // Simple editable placeholder for the selected-table state.
-    return SizedBox(
-      width: 700,
-      height: 250,
-      child: Card(
-        elevation: 0,
-        color: const Color(0xFFFCF8EB),
-        shape: RoundedRectangleBorder(
-          side: const BorderSide(color: AppColors.border),
-          borderRadius: BorderRadius.circular(8),
-        ),
-        child: Padding(
-          padding: const EdgeInsets.all(20),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                tableName,
-                style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600, color: AppColors.textDark),
-              ),
-              const SizedBox(height: 14),
-              const Text('Description goes here.'),
-            ],
+                return Text(item.description ?? item.item.description);
+              },
+            ),
           ),
         ),
       ),
@@ -450,7 +403,7 @@ class _RightPanel extends StatelessWidget {
       child: Column(
         spacing: 4.0,
         children: <Widget>[
-          Text('Rates'),
+          const Text('Rates'),
           // ~ Rates
           Expanded(
             child: ListView.separated(

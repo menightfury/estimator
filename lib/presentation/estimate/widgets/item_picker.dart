@@ -72,7 +72,7 @@ class _ItemSearchState extends State<_ItemSearch> {
         if (searchText.isEmpty) {
           return items;
         }
-        return items.where((item) => item.name.contains(searchText));
+        return items.where((item) => item.name.toLowerCase().contains(searchText.toLowerCase()));
       },
     );
   }

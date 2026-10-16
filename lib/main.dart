@@ -47,8 +47,7 @@ class Bootstrap {
     );
 
     // Initialize local storage i.e. sqlite
-    final api = await EstimatorSqliteApi.initialize(directory);
-    EstimatorRepository(api);
+    await EstimatorSqliteApi.initialize(directory);
   }
 }
 
@@ -57,14 +56,18 @@ class EstimatorApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final repository = EstimatorRepository.instance;
+    final api = EstimatorSqliteApi.instance;
+    final repository = EstimatorRepository(api);
 
-    return MultiBlocProvider(
-      providers: [
-        BlocProvider<AppCubit>(create: (_) => AppCubit()),
-        BlocProvider<ItemsCubit>(create: (_) => ItemsCubit(repository: repository)),
-      ],
-      child: const _AppView(),
+    return RepositoryProvider.value(
+      value: repository,
+      child: MultiBlocProvider(
+        providers: [
+          BlocProvider<AppCubit>(create: (_) => AppCubit()),
+          BlocProvider<ItemsCubit>(create: (_) => ItemsCubit(repository: repository)),
+        ],
+        child: const _AppView(),
+      ),
     );
   }
 }

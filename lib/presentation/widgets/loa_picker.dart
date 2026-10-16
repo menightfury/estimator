@@ -109,7 +109,8 @@ class LoaSearchNotifier extends ChangeNotifier {
 
     try {
       await _debouncer.wait();
-      final results = await EstimatorRepository.instance.searchLoas(query);
+      // final results = await EstimatorRepository.instance.searchLoas(query);
+      final results = await Future.delayed(2.seconds, () => <EstimatorLoa>[]);
       $logger.d(results);
       _status = LoaSearchStateStatus.success;
       _results = results;

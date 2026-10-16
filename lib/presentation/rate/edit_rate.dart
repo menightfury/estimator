@@ -20,7 +20,7 @@ class EditRatePage extends StatelessWidget {
     return BlocProvider(
       create: (context) {
         return EditRateCubit(
-          repository: EstimatorRepository.instance,
+          repository: context.read<EstimatorRepository>(),
           // initialRate: initialRate,
           // initialAccountId: initialAccountId,
           // initialAmc: initialAmc,

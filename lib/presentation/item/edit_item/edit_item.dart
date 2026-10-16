@@ -14,7 +14,7 @@ class EditItemPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (_) => EditItemCubit(repository: EstimatorRepository.instance, initialItem: initialItem),
+      create: (_) => EditItemCubit(repository: context.read<EstimatorRepository>(), initialItem: initialItem),
       child: const _EditItemView(),
     );
   }

@@ -13,10 +13,10 @@ class EstimatorRepository {
   const EstimatorRepository._(this._api);
 
   static EstimatorRepository? _instance;
-  static EstimatorRepository get instance {
-    assert(_instance != null, 'No instance found, please make sure to initialize before getting instance');
-    return _instance!;
-  }
+  // static EstimatorRepository get instance {
+  //   assert(_instance != null, 'No instance found, please make sure to initialize before getting instance');
+  //   return _instance!;
+  // }
 
   factory EstimatorRepository(EstimatorSqliteApi api) {
     _instance ??= EstimatorRepository._(api);

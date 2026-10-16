@@ -1,5 +1,6 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:equatable/equatable.dart';
+
 import 'package:estimator/common_libs.dart';
 import 'package:estimator/model/item_model.dart';
 import 'package:estimator/model/rate_model.dart';
@@ -17,7 +18,13 @@ class Estimate extends Equatable {
 }
 
 class EstimateItem extends Equatable {
-  const EstimateItem({required this.id, required this.item, this.description, this.quantity = 0, this.rates = const []});
+  const EstimateItem({
+    required this.id,
+    required this.item,
+    this.description,
+    this.quantity = 0,
+    this.rates = const [],
+  });
 
   final String id; // ItemInDb id
   final EstimatorItem item;
@@ -30,4 +37,14 @@ class EstimateItem extends Equatable {
 
   @override
   List<Object?> get props => [id, item, description, quantity, rates];
+
+  EstimateItem copyWith({String? description, double? quantity, List<EstimatorRate>? rates}) {
+    return EstimateItem(
+      id: id,
+      item: item,
+      description: description ?? this.description,
+      quantity: quantity ?? this.quantity,
+      rates: rates ?? this.rates,
+    );
+  }
 }

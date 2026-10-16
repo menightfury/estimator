@@ -16,7 +16,7 @@ class CreateEstimateCubit extends Cubit<CreateEstimateState> {
     emit(state.copyWith(items: items..remove(item)));
   }
 
-  void updateSelectedItem(EstimateItem item) {
+  void selectItem(EstimateItem item) {
     emit(state.copyWith(selectedItem: item));
   }
 }
