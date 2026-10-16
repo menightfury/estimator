@@ -10,17 +10,23 @@ import 'package:estimator/model/rate_model.dart';
 
 import 'table_schema.dart';
 
-class EstimatorApi {
-  final Directory databaseDirectory;
+class EstimatorSqliteApi {
+  // preventing from calling the class
+  EstimatorSqliteApi._() : _tableEventController = StreamController<TableEvent>.broadcast();
+
   final StreamController<TableEvent> _tableEventController;
 
-  EstimatorApi(this.databaseDirectory) : _tableEventController = StreamController<TableEvent>.broadcast();
+  static EstimatorSqliteApi? _instance;
+  static EstimatorSqliteApi get instance {
+    assert(_instance != null, 'No instance found, please make sure to call initialize() before getting instance');
+    return _instance!;
+  }
 
   static const _dbName = 'estimator_master.db';
 
   Database? _db;
   Database get db {
-    assert(_db != null, 'Please make sure to initialize before getting database');
+    assert(_db != null, 'Please make sure to call initialize() before getting database');
     return _db!;
   }
 
@@ -29,11 +35,12 @@ class EstimatorApi {
   // Stream of TableChangeEvent
   Stream<TableEvent> get onTableChange => _tableEventController.stream;
 
-  String get dbPath => p.join(databaseDirectory.path, _dbName);
-
-  Future<void> initializeDatabase() async {
+  static Future<EstimatorSqliteApi> initialize(Directory dbDirectory) async {
+    final dbPath = p.join(dbDirectory.path, _dbName);
     final tables = <TableSchema>[ItemTable(), LoaTable(), RateTable()];
-    _db = await databaseFactoryFfi.openDatabase(
+
+    _instance = EstimatorSqliteApi._();
+    instance._db = await databaseFactoryFfi.openDatabase(
       dbPath,
       options: OpenDatabaseOptions(
         version: 1,
@@ -51,7 +58,9 @@ class EstimatorApi {
     );
 
     // ?? Close database at the end ??
-    _tables.addAll(tables);
+    instance._tables.addAll(tables);
+
+    return instance;
   }
 
   // helper function to get a table out of initialized tables

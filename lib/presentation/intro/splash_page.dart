@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:estimator/common_libs.dart';
 import 'package:estimator/main.dart';
 import 'package:estimator/presentation/dashboard/dashboard.dart';
+import 'package:estimator/presentation/item/items/cubit/items_cubit.dart';
 
 class SplashPage extends StatefulWidget {
   const SplashPage({super.key});
@@ -22,7 +23,7 @@ class _SplashPageState extends State<SplashPage> {
     // show splash screen for at least 2 seconds
     _timer = Timer(2.seconds, () => _completer.complete());
 
-    Future.wait<void>([_completer.future, Bootstrap.instance.api.initializeDatabase()]).then((_) async {
+    Future.wait<void>([_completer.future, context.read<ItemsCubit>().fetchItems()]).then((_) async {
       if (!mounted) return;
 
       context.go(const DashboardPage());

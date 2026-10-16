@@ -26,20 +26,10 @@ void main() async {
 }
 
 class Bootstrap {
-  final EstimatorApi api;
-
   // preventing from calling the class
-  const Bootstrap._(this.api);
+  const Bootstrap._();
 
-  static Bootstrap? _instance;
-  static Bootstrap get instance {
-    assert(_instance != null, 'No instance found, please make sure to initialize before getting instance');
-    return _instance!;
-  }
-
-  static Future<Bootstrap> initialize() async {
-    if (_instance != null) return _instance!;
-
+  static Future<void> initialize() async {
     // Default error handler
     FlutterError.onError = (FlutterErrorDetails details) {
       FlutterError.dumpErrorToConsole(details);
@@ -57,9 +47,8 @@ class Bootstrap {
     );
 
     // Initialize local storage i.e. sqlite
-    final api = EstimatorApi(directory);
-    EstimatorRepository.initialize(api);
-    return _instance = Bootstrap._(api);
+    final api = await EstimatorSqliteApi.initialize(directory);
+    EstimatorRepository(api);
   }
 }
 
@@ -73,7 +62,7 @@ class EstimatorApp extends StatelessWidget {
     return MultiBlocProvider(
       providers: [
         BlocProvider<AppCubit>(create: (_) => AppCubit()),
-        BlocProvider<ItemsCubit>(create: (_) => ItemsCubit(repository: repository)..fetchItems()),
+        BlocProvider<ItemsCubit>(create: (_) => ItemsCubit(repository: repository)),
       ],
       child: const _AppView(),
     );

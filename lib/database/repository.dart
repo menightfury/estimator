@@ -9,20 +9,21 @@ import 'api.dart';
 import 'table_schema.dart';
 
 class EstimatorRepository {
-  // singleton api instance
+  // Singleton pattern to ensure only one instance exists
+  const EstimatorRepository._(this._api);
+
   static EstimatorRepository? _instance;
   static EstimatorRepository get instance {
-    assert(_instance != null, 'Please make sure to initialize before getting repository');
+    assert(_instance != null, 'No instance found, please make sure to initialize before getting instance');
     return _instance!;
   }
 
-  factory EstimatorRepository.initialize(EstimatorApi api) {
+  factory EstimatorRepository(EstimatorSqliteApi api) {
     _instance ??= EstimatorRepository._(api);
     return _instance!;
   }
-  const EstimatorRepository._(this._api);
 
-  final EstimatorApi _api;
+  final EstimatorSqliteApi _api;
 
   Stream<TableEvent> get onDataChanged => _api.onTableChange;
 
